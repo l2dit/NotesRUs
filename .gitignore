@@ -19,8 +19,8 @@ Cargo.lock
 /target
 
 /notes_r_us_ui/Cargo.lock
-/notes_r_us_ui/target
-/notes_r_us_ui/node_modules
+/notes_r_us_ui/target/
+/notes_r_us_ui/node_modules/
 /notes_r_us_ui/package-lock.json
 /notes_r_us_ui/end2end/package-lock.json
-/notes_r_us_ui/end2end/node_modules
+/notes_r_us_ui/end2end/node_modules/
