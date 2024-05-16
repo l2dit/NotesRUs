@@ -4,13 +4,13 @@ use poem_openapi::{
     OpenApi,
 };
 
-pub struct Api;
-
-#[derive(poem_openapi::ApiResponse)]
-enum Redirect {
-    #[oai(status = 302)]
-    Response(#[oai(header = "Location")] String),
+#[derive(poem_openapi::Tags)]
+enum ApiTags {
+    /// All public API endpoints.
+    API,
 }
+
+pub struct Api;
 
 #[OpenApi]
 impl Api {
@@ -21,8 +21,8 @@ impl Api {
     }
 }
 
-#[derive(poem_openapi::Tags)]
-enum ApiTags {
-    /// All public API endpoints.
-    API,
+#[derive(poem_openapi::ApiResponse)]
+enum Redirect {
+    #[oai(status = 302)]
+    Response(#[oai(header = "Location")] String),
 }
