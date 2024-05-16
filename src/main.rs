@@ -1,38 +1,12 @@
+use notes_r_us::backend;
 use poem::{self, endpoint::StaticFilesEndpoint, listener::TcpListener, Route, Server};
-use poem_openapi::{
-    param::{self, Path, Query},
-    payload::{self, PlainText},
-    OpenApi, OpenApiService,
-};
+use poem_openapi::OpenApiService;
 use std::env::{self};
-
-struct Api;
-
-#[derive(poem_openapi::ApiResponse)]
-enum Redirect {
-    #[oai(status = 302)]
-    Response(#[oai(header = "Location")] String),
-}
-
-#[OpenApi]
-impl Api {
-    /// Index / Docs
-    #[oai(path = "/", method = "get", tag = ApiTags::API)]
-    async fn index(&self) -> Redirect {
-        Redirect::Response("/api/docs".to_string())
-    }
-}
-
-#[derive(poem_openapi::Tags)]
-enum ApiTags {
-    /// All public API endpoints.
-    API,
-}
 
 #[tokio::main]
 async fn main() -> std::result::Result<(), std::io::Error> {
     let api_service = OpenApiService::new(
-        Api,
+        backend::Api,
         "Notes R Us API Documentation",
         std::env::var("CARGO_PACKAGE_VERSION").unwrap_or(String::from("N/A")),
     )
