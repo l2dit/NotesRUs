@@ -8,7 +8,6 @@ COPY ./notes_r_us_ui/ ./notes_r_us_ui/
 WORKDIR /usr/app/notes_r_us_ui/
 RUN rustup target add wasm32-unknown-unknown
 RUN npm install && trunk build
-RUN ls
 
 FROM base as api
 WORKDIR /usr/app
