@@ -4,14 +4,19 @@ use poem_openapi::OpenApiService;
 use std::env::{self};
 
 #[tokio::main]
-async fn main() -> std::result::Result<(), std::io::Error> {
+async fn main() -> () {
+    let server_url: &str = if cfg!(debug_assertions) {
+        "localhost:3000"
+    } else {
+        "notesrus.nzdev.org"
+    };
+
     let api_service = OpenApiService::new(
         backend::Api,
         "Notes R Us API Documentation",
-        std::env::var("CARGO_PACKAGE_VERSION").unwrap_or(String::from("N/A")),
+        env!("CARGO_PKG_VERSION"),
     )
-    .server("http://localhost:80")
-    .server("https://testapi.nzdev.org");
+    .server(format!("http://{}", server_url));
     let ui_docs_swagger = api_service.swagger_ui();
     let app = Route::new()
         .nest(
@@ -26,5 +31,8 @@ async fn main() -> std::result::Result<(), std::io::Error> {
                 .index_file("index.html"),
         );
 
-    Server::new(TcpListener::bind("0.0.0.0:80")).run(app).await
+    Server::new(TcpListener::bind("0.0.0.0:3000"))
+        .run(app)
+        .await
+        .unwrap();
 }
