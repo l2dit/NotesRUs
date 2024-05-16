@@ -17,3 +17,9 @@ Cargo.lock
 # Added by cargo
 
 /target
+
+# user interface 
+**/Cargo.lock
+**/target/
+**/node_modules/
+**/package-lock.json
