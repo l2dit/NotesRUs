@@ -30,7 +30,7 @@ fn Home() -> impl IntoView {
                 class="bg-amber-600 hover:bg-sky-700 px-5 py-3 text-white rounded-lg"
                 on:click=move |_| set_count.update(|count| *count += 1)
             >
-                "Something's here | "
+                "Something's not here | "
                 {move || if count.get() == 0 {
                     "Click me!".to_string()
                 } else {
