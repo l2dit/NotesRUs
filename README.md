@@ -10,7 +10,7 @@ Notes Aplication
 ```zsh
 cargo build // builds to the target directory `./target/debug/notes_r_us`
 
-cargo run // Runs The Application On `0.0.0.0:8000`
+cargo run // Runs The Application On `0.0.0.0:3000`
 
-./target/debug/notes_r_us // Runs The Application On `0.0.0.0:8000`
+./target/debug/notes_r_us // Runs The Application On `0.0.0.0:3000`
 ```
