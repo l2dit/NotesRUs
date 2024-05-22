@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: notes-volume
+
+spec:
+  capacity:
+    storage: 10Gi
+
+  accessModes:
+    - ReadWriteMany
+
+  storageClassName: nfs
+
+  nfs:
+    server: 192.168.50.3 # the ip of my virtralised nas
+    path: "/mnt/tank/nfs/kubernetes/notes-r-us"
