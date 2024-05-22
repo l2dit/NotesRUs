@@ -38,6 +38,9 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USER }}
           password: ${{ secrets.DOCKER_HUB_KEY }}
 
+      - name: Lowercase the repo name and username
+        run: echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV
+        
       - name: Docker Build & Push
         uses: docker/build-push-action@v5
         with:
@@ -46,6 +49,6 @@ jobs:
           tags: |
             asskit/notesrus:${{ github.sha }}
             asskit/notesrus:latest
-            ghcr.io/${{ env.GITHUB_REPOSITORY }}:${{ github.sha }}
-            ghcr.io/${{ env.GITHUB_REPOSITORY }}:latest
+            ghcr.io/${{ env.REPO }}:${{ github.sha }}
+            ghcr.io/${{ env.REPO }}:latest
           file: ./Dockerfile 
