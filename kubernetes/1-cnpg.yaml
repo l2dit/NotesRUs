@@ -1,0 +1,11 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgresql-pvc-template
+spec:
+  instances: 3
+
+  storage:
+    storageClass: nfs-client
+    size: 1Gi
+
