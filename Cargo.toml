@@ -3,8 +3,10 @@ name = "notes_r_us"
 version = "1.0.0"
 edition = "2021"
 
+
 [dependencies]
-poem = { version = "3.0.0", features = ["static-files"] }
-poem-openapi = { version = "5.0.0", features = ["swagger-ui"] }
-swagger = "6.4.1"
+poem = { version = "3.0.1", features = ["static-files", "multipart", "tempfile"] }
+poem-openapi = { version = "5.0.2", features = ["swagger-ui", "openapi-explorer"] }
 tokio = { version = "1.37.0", features = ["full"] }
+tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
+tracing = "0.1.4"
