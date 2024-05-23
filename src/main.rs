@@ -21,7 +21,7 @@ async fn main() -> io::Result<()> {
         .allow_origins(vec![
             "http://localhost:3000/",
             "https://notesrus.nzdev.org/",
-        ]) // Specify trusted origins here
+        ])
         .allow_methods(vec!["GET", "POST", "PUT", "DELETE", "OPTIONS"])
         .allow_headers(vec![
             "Authorization",
@@ -68,15 +68,15 @@ async fn main() -> io::Result<()> {
             "/api",
             Route::new()
                 .nest("/", api_service)
-                .nest("/docs", ui_docs_swagger),
+                .nest("/docs", ui_docs_swagger)
+                .with(cors)
+                .with(Tracing),
         )
         .nest(
             "/",
             StaticFilesEndpoint::new(env::current_dir().unwrap().join("notes_r_us_ui/dist"))
                 .index_file("index.html"),
-        )
-        .with(cors)
-        .with(Tracing);
+        );
 
     // Start the server
     info!("Starting server at 0.0.0.0:3000");
