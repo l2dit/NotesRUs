@@ -40,7 +40,7 @@ jobs:
 
       - name: Lowercase the repo name and username
         run: echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
-        
+
       - name: Docker Build & Push
         uses: docker/build-push-action@v5
         with:
