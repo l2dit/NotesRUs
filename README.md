@@ -1,4 +1,6 @@
+[![argocd badge](https://argocd.nzdev.org/api/badge?name=notes-r-us&revision=true)](https://argocd.nzdev.org/applications/argocd/notes-r-us) [![On Push To Master](https://github.com/l2dit/NotesRUs/actions/workflows/Push_master.yaml/badge.svg)](https://github.com/l2dit/NotesRUs/actions/workflows/Push_master.yaml)
 # NotesRUs
+
 Notes Aplication
 
 # What You Need
