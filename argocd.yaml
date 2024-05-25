@@ -10,7 +10,7 @@ spec:
   source:
     path: ./kubernetes
     repoURL: 'https://github.com/l2dit/NotesRUs'
-    targetRevision: kubernetes
+    targetRevision: HEAD
   project: public-deployments
   syncPolicy:
     automated:
