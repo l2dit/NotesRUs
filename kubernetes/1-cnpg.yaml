@@ -1,11 +1,12 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: postgresql-pvc-template
+  name: postgresql-notes-r-us
+  namespace: notes-r-us
 spec:
   instances: 3
 
   storage:
     storageClass: nfs-client
-    size: 1Gi
+    size: 10Gi
 
