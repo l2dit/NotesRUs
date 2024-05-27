@@ -36,5 +36,8 @@ export default {
 </script>
 
 <style scoped>
-/* styless stuff */
+* {
+  font-family: "Poppins", sans-serif;
+  padding-left: 5%;
+}
 </style>
