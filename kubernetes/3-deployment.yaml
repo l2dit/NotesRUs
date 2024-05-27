@@ -37,8 +37,8 @@ spec:
         - name: ORIGNS
           value: "0.0.0.0"
 
-        - name: DEPLOYED
-          value: "true"
+        - name: DOMAIN
+          value: "notesrus.nzdev.org"
 
         - name: POSTGRESQL_USERNAME
           valueFrom:
