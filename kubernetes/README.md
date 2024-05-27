@@ -11,5 +11,5 @@ KUBERNETES="true"
 POSTGRESQL_USERNAME=<username_secret>
 POSTGRESQL_PASSWORD=<password_secret>
 POSGRESQL_IP=<postgresql_ip_address>
-POSGRESQL_IP=<posgresql_port>
+POSGRESQL_PORT=<posgresql_port>
 ```
