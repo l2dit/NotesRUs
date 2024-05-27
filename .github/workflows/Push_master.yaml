@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        architecture: [linux/386,linux/amd64,linux/arm/v7,linux/arm64]
+        architecture: [linux/amd64, linux/arm/v7, linux/arm64]
     
     permissions:
       contents: read
