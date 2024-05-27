@@ -5,7 +5,7 @@ Manifests are complex if you want a high level look of whats happening look [HER
 # Application Enviroment Vars
 PORT="3000"
 ORIGNS="0.0.0.0"
-KUBERNETES="true"
+DEPLOYED="true"
 
 # PostgreSQL Enviroment Vars
 POSTGRESQL_USERNAME=<username_secret>
