@@ -40,11 +40,12 @@ jobs:
 
       - name: Lowercase the repo name and username
         run: echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
-        
+
       - name: Docker Build & Push
         uses: docker/build-push-action@v5
         with:
           context: .
+          platforms: linux/386,linux/amd64,linux/arm/v7,linux/arm64,linux/ppc64le,linux/s390x
           push: true
           tags: |
             asskit/notesrus:${{ github.sha }}
