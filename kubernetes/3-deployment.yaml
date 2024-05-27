@@ -37,7 +37,7 @@ spec:
         - name: ORIGNS
           value: "0.0.0.0"
 
-        - name: KUBERNETES
+        - name: DEPLOYED
           value: "true"
 
         - name: POSTGRESQL_USERNAME
