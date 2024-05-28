@@ -4,9 +4,9 @@
       <label id="button-label">Upload markdown.</label>
       <br />
       <label id="file-input-button" for="file-input">Upload</label>
-      <input id="file-input" type="file" @change="handle_file_change" accept=".md, .markdown"/>
+      <input id="file-input" type="file" @change="handle_file_change" accept=".md, .markdown" />
     </form>
-    <p id="error-message"class="error-message-hide">{{ error_msg }}</p>
+    <p id="error-message" class="error-message-hide">{{ error_msg }}</p>
   </div>
 </template>
 
@@ -32,31 +32,32 @@ export default {
             'Content-Type': 'text/markdown'
           }
         })
-        .then(response => {
-          this.set_background_success();
-          this.error_msg = "File uploaded successfully";
-          console.log('File uploaded successfully:', response.data);
-        })
-        .catch(error => {
-          this.set_background_error();
-          this.error_msg = `File failed to upload: ${error.message}`;
-          console.log('Error uploading file:', error.message);
+          .then(response => {
+            this.set_background_success();
+            this.error_msg = `File uploaded successfully with File Id: ${response.data}`;
+            console.log('File uploaded successfully:', response.data);
+          })
+          .catch(error => {
+            this.set_background_error();
+            this.error_msg = `File failed to upload: ${error.message}`;
+            console.log('Error uploading file:', error.message);
 
-        });
+          });
       }
     },
     set_background_success() {
       const button = document.getElementById("file-input-button");
+      document.getElementById('error-message').classList.toggle('error-message-show');
       button.classList.remove("error-background");
       button.classList.add("success-background");
-      setTimeout(this.remove_background, 3000)      
+      setTimeout(this.remove_background, 5000)
     },
-    remove_background(){
+    remove_background() {
       document.getElementById('error-message').classList.toggle('error-message-show');
       const button = document.getElementById("file-input-button");
       button.classList.remove("success-background");
       button.classList.remove("error-background");
-      
+
     },
     set_background_error() {
       const button = document.getElementById("file-input-button");
@@ -79,9 +80,11 @@ export default {
   transition: all 0.5s ease-in-out;
   opacity: 0;
 }
+
 .error-message-show {
   opacity: 1;
 }
+
 /* .center-content {
   display: flex;
   flex-direction: column;
@@ -119,10 +122,11 @@ div form input[type=file] {
 .error-background {
   background-color: #dc3545;
 }
+
 .center-content {
   position: absolute;
-  top: 50%;
-  left: 54%;
+  top: 53%;
+  left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
 }
