@@ -1,22 +1,34 @@
 <template>
+    <Sidebar />
     <div id="app">
-      <Sidebar />
       <router-view />
     </div>
   </template>
   
   <script>
-  import FileUpload from './components/FileUpload.vue';
   import Sidebar from './components/Sidebar.vue';
   export default {
     components: {
       Sidebar,
-      FileUpload
     }
   };
   </script>
   
   <style>
-  /* put syyles here 0_0*/
+  div {
+    justify-content: center;
+    align-items: center;
+  }
+    div#app {
+      height: 95vh;
+      background-color: #777777;
+      margin: 1% 1% 0% 5%;
+      border-radius: 1rem;
+    }
+   
+    
+    * {
+        
+    }
   </style>
   

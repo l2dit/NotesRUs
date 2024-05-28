@@ -1,24 +1,23 @@
 <template>
-  <div>
-    <form @submit.prevent="handle_submit">
-      <label>Upload markdown.</label>
+  <div class="center-content">
+    <form>
+      <label id="button-label">Upload markdown.</label>
       <br />
-      <label id="file-input-button"for="file-input" >Upload</label>
-      <input id="file-input"type="file" @change="handle_file_change" accept=".md, .markdown"/>
+      <label id="file-input-button" for="file-input">Upload</label>
+      <input id="file-input" type="file" @change="handle_file_change" accept=".md, .markdown"/>
     </form>
-    <p>{{ success }}</p>
+    <p id="error-message"class="error-message-hide">{{ error_msg }}</p>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
-
 let post_route = "https://notesrus.nzdev.org/api/file/upload";
 
 export default {
   data() {
     return {
-      success: ''
+      error_msg: 'Error'
     };
   },
   methods: {
@@ -34,18 +33,38 @@ export default {
           }
         })
         .then(response => {
-          this.success = "File uploaded successfully";
+          this.set_background_success();
+          this.error_msg = "File uploaded successfully";
           console.log('File uploaded successfully:', response.data);
         })
         .catch(error => {
-          this.success = `File failed to upload ${error}`;
-          console.error('Error uploading file:', error);
+          this.set_background_error();
+          this.error_msg = `File failed to upload: ${error.message}`;
+          console.log('Error uploading file:', error.message);
+
         });
       }
     },
-    handle_submit() {
-      console.log('Form submitted successfully');
-    }
+    set_background_success() {
+      const button = document.getElementById("file-input-button");
+      button.classList.remove("error-background");
+      button.classList.add("success-background");
+      setTimeout(this.remove_background, 3000)      
+    },
+    remove_background(){
+      document.getElementById('error-message').classList.toggle('error-message-show');
+      const button = document.getElementById("file-input-button");
+      button.classList.remove("success-background");
+      button.classList.remove("error-background");
+      
+    },
+    set_background_error() {
+      const button = document.getElementById("file-input-button");
+      document.getElementById('error-message').classList.toggle('error-message-show');
+      button.classList.remove("success-background");
+      button.classList.add("error-background");
+      setTimeout(this.remove_background, 3000)
+    },
   }
 };
 </script>
@@ -53,25 +72,58 @@ export default {
 <style scoped>
 * {
   font-family: "Poppins", sans-serif;
-  padding-left: 5%;
+
 }
-div form input[type=file] {
-  display: none;
+
+.error-message-hide {
+  transition: all 0.5s ease-in-out;
+  opacity: 0;
 }
+.error-message-show {
+  opacity: 1;
+}
+/* .center-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+} */
+
 #file-input-button {
-  transition: all 0.1s;
+  transition: background-color 0.5s ease-in-out;
   border: 1px solid #ccc;
   display: inline-block;
   padding: 6px 12px;
   cursor: pointer;
+  margin-top: 10px;
 }
 
 #file-input-button:hover {
-  transition: all 0.3s;
   border: 1px solid #000000;
-  display: inline-block;
-  padding: 6px 12px;
-  cursor: pointer;
+}
+
+#button-label {
+  font-size: 300%;
+}
+
+div form input[type=file] {
+  display: none;
+}
+
+.success-background {
+  background-color: #28a745;
+}
+
+.error-background {
+  background-color: #dc3545;
+}
+.center-content {
+  position: absolute;
+  top: 50%;
+  left: 54%;
+  transform: translate(-50%, -50%);
+  text-align: center;
 }
 </style>
-
