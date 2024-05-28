@@ -10,6 +10,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+let post_route = window.location.hostname.concat("/file/upload");
 export default {
   data() {
     return {
@@ -19,7 +21,18 @@ export default {
   methods: {
     handle_file_change(event) {
       const file = event.target.files[0];
+      const fileForm = new FormData();
+      fileForm.append("file", file)
       if (file) {
+
+      axios.post(post_route, {
+        file: fileForm
+      }, {
+        headers: {
+          'Content-Type': 'text/md'
+        }
+      })
+
         const file_reader = new FileReader();
         file_reader.onload = (e) => {
           this.file_content = e.target.result;

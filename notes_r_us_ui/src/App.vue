@@ -1,8 +1,7 @@
-
 <template>
     <div id="app">
       <Sidebar />
-      <FileUpload />
+      <router-view />
     </div>
   </template>
   
