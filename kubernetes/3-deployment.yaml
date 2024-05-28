@@ -40,6 +40,9 @@ spec:
         - name: DOMAIN
           value: "notesrus.nzdev.org"
 
+        - name: HTTPS
+          value: "true"
+
         - name: POSTGRESQL_USERNAME
           valueFrom:
             secretKeyRef:

@@ -6,6 +6,7 @@ Manifests are complex if you want a high level look of whats happening look [HER
 PORT="3000"
 ORIGNS="0.0.0.0"
 DOMAIN="notesrus.nzdev.org"
+HTTPS="true"
 
 # PostgreSQL Enviroment Vars
 POSTGRESQL_USERNAME=<username_secret>

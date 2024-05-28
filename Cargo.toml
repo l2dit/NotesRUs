@@ -4,6 +4,7 @@ version = "1.0.0"
 edition = "2021"
 
 [dependencies]
+clap = { version = "4.5.4", features = ["derive", "env"] }
 poem = { version = "3.0.0", features = ["static-files"] }
 poem-openapi = { version = "5.0.0", features = ["swagger-ui"] }
 swagger = "6.4.1"
