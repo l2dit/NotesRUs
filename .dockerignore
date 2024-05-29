@@ -23,5 +23,5 @@ Cargo.lock
 **/target/
 **/node_modules/
 **/package-lock.json
-
+**/dist
 Dockerfile

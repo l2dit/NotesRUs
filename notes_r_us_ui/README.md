@@ -1,10 +1,7 @@
-# What You Need
-1. Need to have installed trunk `cargo install trunk`
-2. Need tailwind installed `npm install`
+# NotesRus Frontend
+the frontend is made with Vue and Vite
 
-# To Build
-```zsh
-trunk build // Just Builds to `./dist`
 
-trunk serve // Builds And Serves At Port `3000`
-```
+## Installing
+Ensure that npm is installed and run below to start the frontend.  
+`npm i; npm run dev`
