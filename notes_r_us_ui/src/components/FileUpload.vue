@@ -17,6 +17,7 @@ let post_route = "https://notesrus.nzdev.org/api/file/upload";
 export default {
   data() {
     return {
+      /* Error is just a placeholder so that the p tag when text added does not move the whole upload section upwards */
       error_msg: 'Error'
     };
   },
