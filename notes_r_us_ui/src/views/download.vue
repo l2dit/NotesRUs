@@ -11,6 +11,4 @@ export default {
 };
 </script>
 
-<style>
-/* put syyles here 0_0*/
-</style>
+<style></style>

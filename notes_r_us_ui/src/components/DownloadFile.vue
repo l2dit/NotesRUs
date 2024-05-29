@@ -23,16 +23,25 @@ export default {
   },
   methods: {
     download_file() {
+      /* gets the id of the file the user wants to fetch */
       const file_id = document.getElementById("file-id").value;
+      /* route to make requests to */
       const get_route = `https://notesrus.nzdev.org/api/file/download/${file_id}`;
+      /* make get request to the route */
       axios.get(get_route, { responseType: 'blob' })
         .then(response => {
+          /* create obj url with the blob recieved in response */
           const url = window.URL.createObjectURL(new Blob([response.data]));
+          /*  create new anchor tag */
           const link = document.createElement('a');
+          /* set the location of the link to the url and set it to download with filename markdown */
           link.href = url;
           link.setAttribute('download', "markdown.md");
+          /* add the link tag to the body */
           document.body.appendChild(link);
+          /* click the link to trigger download */
           link.click();
+          /* remove the link from page */
           document.body.removeChild(link);
           window.URL.revokeObjectURL(url);
         })

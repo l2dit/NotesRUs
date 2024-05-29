@@ -22,11 +22,14 @@ export default {
   },
   methods: {
     handle_file_change(event) {
+      /* Get file from upload buttom */
       const file = event.target.files[0];
       if (file) {
+        /* create form to put file in */
         const fileForm = new FormData();
+        /* add file to form */
         fileForm.append("file", file);
-
+        /* make a post request to the api with the file form */
         axios.post(post_route, fileForm, {
           headers: {
             'Content-Type': 'text/markdown'
@@ -45,6 +48,7 @@ export default {
           });
       }
     },
+    /* change button background to green */
     set_background_success() {
       const button = document.getElementById("file-input-button");
       document.getElementById('error-message').classList.toggle('error-message-show');
@@ -52,6 +56,7 @@ export default {
       button.classList.add("success-background");
       setTimeout(this.remove_background, 5000)
     },
+    /* reset button to normal colour */
     remove_background() {
       document.getElementById('error-message').classList.toggle('error-message-show');
       const button = document.getElementById("file-input-button");
@@ -59,6 +64,7 @@ export default {
       button.classList.remove("error-background");
 
     },
+    /* set button background to red */
     set_background_error() {
       const button = document.getElementById("file-input-button");
       document.getElementById('error-message').classList.toggle('error-message-show');
@@ -84,15 +90,6 @@ export default {
 .error-message-show {
   opacity: 1;
 }
-
-/* .center-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  text-align: center;
-} */
 
 #file-input-button {
   transition: background-color 0.5s ease-in-out;
