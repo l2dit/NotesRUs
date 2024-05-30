@@ -47,22 +47,20 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v4
 
-      - name: Change To Frontend Dir
-        run: cd notes_r_us_ui
-
       - name: NPM Install Dependencies
-        run: npm ci
+        run: cd notes_r_us_ui & npm ci
 
       - name: Build Frontend 
-        run: npm run build --if-present
+        run: cd notes_r_us_ui & npm run build --if-present
 
       - name: Upload Frontend
         uses: actions/upload-artifact@v4
         with:
           name: Frontend-${{ github.sha }}
-          path: ./dist/
+          path: ./notes_r_us_ui/dist/
   
   docker_build:
+    needs: [build-frontend, build-api]
     name: Docker Build
 
     runs-on: ubuntu-latest
