@@ -1,11 +1,43 @@
-name: On Push To Master
+name: Build Docker Image
 
 on:
-  push:
-    branches:
-      - "master"
+  workflow_call:
+
+  workflow_dispatch:
 
 jobs:
+  build-api:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-gnu
+            docker-target: linux/amd64
+
+          - target: aarch64-unknown-linux-gnu
+            docker-target: linux/arm64
+
+    steps:
+      - uses: actions/setup-node@v4
+
+      - name: Setup Rust For ${{ matrix.target }}
+        uses: actions-rs/toolchain@v1
+        with:
+          target: ${{ matrix.target }}
+
+      - name: Build To Target {{ matrix.target }}
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --target ${{ matrix.target }} --release
+
+      - name: Upload ${{ matrix.target }} Build
+        uses: actions/upload-artifact@v4
+        with:
+          path: ./target/${{ matrix.target }}/debug/notes_r_us
+          name: ${{ matrix.docker-target }}-${{ github.sha }}
+
   build-frontend:
     runs-on: ubuntu-latest
 
@@ -37,21 +69,24 @@ jobs:
 
     strategy:
       matrix:
-        architecture: [linux/amd64, linux/arm/v7, linux/arm64]
-    
+        architecture: [linux/amd64, linux/arm64]
+
     permissions:
       contents: read
       packages: write
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
       - name: Get The Frontend
         uses: actions/download-artifact@v4
         with:
           name: Frontend-${{ github.sha }}
-          path: ./notes_r_us_ui/dist/
+          path: ./notes_r_us_ui/
+
+      - name: Get The Api
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.architecture }}
+          path: ./notes-r-us
 
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v3
