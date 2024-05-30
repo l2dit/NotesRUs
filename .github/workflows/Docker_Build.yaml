@@ -19,7 +19,7 @@ jobs:
             docker-target: linux/arm64
 
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
 
       - name: Setup Rust For ${{ matrix.target }}
         uses: actions-rs/toolchain@v1
