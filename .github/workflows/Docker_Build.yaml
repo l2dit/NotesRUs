@@ -49,6 +49,9 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v4
 
+      - name: Debug
+        run: ls -la
+
       - name: NPM Install Dependencies
         run: npm install
 
