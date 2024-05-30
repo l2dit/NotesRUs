@@ -51,10 +51,10 @@ jobs:
         run: cd notes_r_us_ui
 
       - name: NPM Install Dependencies
-        run: npm install
+        run: cd notes_r_us_ui & npm install
 
       - name: Build Frontend 
-        run: npm run build --if-present
+        run: cd notes_r_us_ui & npm run build --if-present
 
       - name: Upload Frontend
         uses: actions/upload-artifact@v4
