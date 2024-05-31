@@ -41,7 +41,7 @@ export default {
           document.getElementById("preview-contents").classList.add("center-content-markdown");
         })
         .catch(error => {
-          this.error_msg = 'Error: Unable to download the file.';
+          this.error_msg = `Error file failed to preview: ${error.code}`;
           document.getElementById("error-message").classList.add("error-message-show")
           setTimeout(() => {document.getElementById("error-message").classList.remove("error-message-show")}, 3000);
           console.error("Error:", error);
