@@ -13,7 +13,7 @@ export default {
 </script>
 
 <style>
-body {
+#app > body {
   background-color: #F4F5FA;
 }
 
@@ -29,5 +29,6 @@ div#app {
   border-radius: 0.8rem;
   border: 1px solid rgb(99, 99, 99);
   box-shadow: 0px 0px 0.2rem black;
+  overflow-y: auto;
 }
 </style>

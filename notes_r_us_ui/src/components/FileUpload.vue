@@ -12,7 +12,7 @@
 
 <script>
 import axios from 'axios';
-let post_route = "https://notesrus.nzdev.org/api/file/upload";
+let post_route = "http://localhost:3000/api/file/upload";
 
 export default {
   data() {
@@ -33,7 +33,7 @@ export default {
         /* make a post request to the api with the file form */
         axios.post(post_route, fileForm, {
           headers: {
-            'Content-Type': 'text/markdown'
+            'Content-Type': 'multipart/form-data',
           }
         })
           .then(response => {
