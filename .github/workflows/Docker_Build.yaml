@@ -13,7 +13,7 @@ jobs:
       matrix:
         include:
           - target: x86_64-unknown-linux-gnu
-            docker-target: linux/amd64
+            arch-ref: linux|amd64
 
           # - target: aarch64-unknown-linux-gnu
           #   docker-target: linux/arm64
@@ -27,7 +27,7 @@ jobs:
           target: ${{ matrix.target }}
           toolchain: stable
 
-      - name: Build To Target ${{ matrix.target }}
+      - name: Build To Target {{ matrix.target }}
         uses: actions-rs/cargo@v1
         with:
           command: build
@@ -36,8 +36,8 @@ jobs:
       - name: Upload ${{ matrix.target }} Build
         uses: actions/upload-artifact@v4
         with:
-          path: ./target/${{ matrix.target }}/release/notes_r_us
-          name: ${{ matrix.docker-target }}-${{ github.sha }}
+          path: ./target/${{ matrix.target }}/debug/notes_r_us
+          name: ${{ matrix.arch-ref }}-${{ github.sha }}
 
   build-frontend:
     runs-on: ubuntu-latest
@@ -66,6 +66,12 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        includes:
+          - architecture: amd64/linux
+            arch-ref: amd64|linux
+
     permissions:
       contents: read
       packages: write
@@ -80,7 +86,7 @@ jobs:
       - name: Get The Api
         uses: actions/download-artifact@v4
         with:
-          name: linux/amd64-{{ github.sha }}
+          name: ${{ matrix.arch-ref }}-${{ github.sha }}
           path: ./notes-r-us
 
       - name: Setup QEMU
@@ -109,7 +115,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          platforms: linux/amd64
+          platforms: ${{ matrix.architecture }}
           push: true
           tags: |
             asskit/notesrus:${{ github.sha }}
