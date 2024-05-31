@@ -27,7 +27,7 @@ jobs:
           target: ${{ matrix.target }}
           toolchain: stable
 
-      - name: Build To Target {{ matrix.target }}
+      - name: Build To Target ${{ matrix.target }}
         uses: actions-rs/cargo@v1
         with:
           command: build
@@ -36,7 +36,7 @@ jobs:
       - name: Upload ${{ matrix.target }} Build
         uses: actions/upload-artifact@v4
         with:
-          path: ./target/${{ matrix.target }}/debug/notes_r_us
+          path: ./target/${{ matrix.target }}/release/notes_r_us
           name: ${{ matrix.docker-target }}-${{ github.sha }}
 
   build-frontend:
