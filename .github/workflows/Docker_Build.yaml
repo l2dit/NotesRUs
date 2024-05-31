@@ -36,7 +36,7 @@ jobs:
       - name: Upload ${{ matrix.target }} Build
         uses: actions/upload-artifact@v4
         with:
-          path: ./target/${{ matrix.target }}/debug/notes_r_us
+          path: ./target/${{ matrix.target }}/release/notes_r_us
           name: ${{ matrix.arch-ref }}-${{ github.sha }}
 
   build-frontend:
@@ -68,7 +68,7 @@ jobs:
 
     strategy:
       matrix:
-        includes:
+        include:
           - architecture: amd64/linux
             arch-ref: amd64|linux
 
