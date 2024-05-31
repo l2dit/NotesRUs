@@ -16,7 +16,7 @@
 <script>
 import { marked } from 'marked';
 import axios from 'axios';
-
+import DOMPurify from 'dompurify';
 export default {
   data() {
     return {
@@ -30,12 +30,12 @@ export default {
         /* gets the id of the file the user wants to fetch */
       const file_id = document.getElementById("file-id").value;
       /* route to make requests to */
-      const get_route = `http://localhost:3000/api/file/download/${file_id}`;
+      const get_route = `https://noterus.nzdev.org/api/file/download/${file_id}`;
       /* make get request to the route */
       axios.get(get_route)
         .then(response => {
           document.getElementById("form-file-preview-selector").style.visibility = "hidden";
-          document.getElementById("preview-contents").innerHTML = marked.parse(response.data);
+          document.getElementById("preview-contents").innerHTML = DOMPurify.sanitize(marked.parse(response.data));
           console.log(response.data)
           document.getElementById("centered-parent-div").classList.remove("center-content");
           document.getElementById("preview-contents").classList.add("center-content-markdown");

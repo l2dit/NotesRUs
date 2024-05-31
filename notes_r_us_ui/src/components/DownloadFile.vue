@@ -25,7 +25,7 @@ export default {
       /* gets the id of the file the user wants to fetch */
       const file_id = document.getElementById("file-id").value;
       /* route to make requests to */
-      const get_route = `http://localhost:3000/api/file/download/${file_id}`;
+      const get_route = `https://noterus.nzdev.org/api/file/download/${file_id}`;
       /* make get request to the route */
       axios.get(get_route)
         .then(response => {
