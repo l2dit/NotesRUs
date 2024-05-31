@@ -12,7 +12,7 @@
 
 <script>
 import axios from 'axios';
-let post_route = "https://noterus.nzdev.org/api/file/upload";
+let post_route = "https://notesrus.nzdev.org/api/file/upload";
 
 export default {
   data() {
