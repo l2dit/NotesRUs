@@ -19,8 +19,9 @@ async fn main() -> io::Result<()> {
     // Configure CORS settings
     let cors = Cors::new()
         .allow_origins(vec![
-            "http://localhost:3000/",
-            "https://notesrus.nzdev.org/",
+            "http://localhost:5173"
+            "http://localhost:3000",
+            "https://notesrus.nzdev.org",
         ])
         .allow_methods(vec!["GET", "POST", "PUT", "DELETE", "OPTIONS"])
         .allow_headers(vec![
