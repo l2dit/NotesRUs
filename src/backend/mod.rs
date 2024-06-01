@@ -1,3 +1,5 @@
+use chrono::{TimeZone, Utc};
+use chrono_tz::Pacific::Auckland;
 use poem_openapi::{
     param::Path,
     payload::{Attachment, AttachmentType, Json},
@@ -18,6 +20,7 @@ enum ApiTags {
 pub struct File {
     filename: Option<String>,
     data: Vec<u8>,
+    upload_time: String,
 }
 
 pub struct Status {
@@ -44,6 +47,11 @@ impl Api {
         let id = status.id;
         status.id += 1;
 
+        let utc = Utc::now().naive_utc();
+        let dt = Auckland.from_utc_datetime(&utc);
+        let time_file_upload: chrono::format::DelayedFormat<chrono::format::StrftimeItems> =
+            dt.format("%Y-%m-%d %H:%M:%S");
+
         let file = File {
             filename: upload.file.file_name().map(ToString::to_string),
             data: upload
@@ -51,6 +59,7 @@ impl Api {
                 .into_vec()
                 .await
                 .map_err(poem::error::BadRequest)?,
+            upload_time: time_file_upload.to_string(),
         };
         status.files.insert(id, file);
         Ok(Json(id))
