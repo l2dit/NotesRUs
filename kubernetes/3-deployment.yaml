@@ -7,7 +7,7 @@ metadata:
     app: notes-r-us-app
 
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: notes-r-us-app
@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
       - name: notes-r-us
-        image: ghcr.io/l2dit/notesrus:latest
+        image: ghcr.io/l2dit/notesrus:f6b4e223de5b62be810eb2f7e7e5f8e5d98e7e7a
         ports:
         - containerPort: 3000
 
