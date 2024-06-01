@@ -91,7 +91,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ matrix.arch-ref }}-${{ github.sha }}
-          path: ./notes-r-us
+          path: ./notes_r_us
 
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v3
