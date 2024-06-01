@@ -67,7 +67,7 @@ async fn main() -> io::Result<()> {
     // Configure CORS settings
     let cors = Cors::new()
         .allow_origins(vec![
-            "http://localhost:5173"
+            "http://localhost:5173",
             "http://localhost:3000",
             "https://notesrus.nzdev.org",
         ])
@@ -85,9 +85,8 @@ async fn main() -> io::Result<()> {
             "Access-Control-Allow-Methods",
             "Access-Control-Allow-Headers",
         ]);
-  
-    let args = Args::parse();
 
+    let args = Args::parse();
 
     // Create the API service
     let api_service = OpenApiService::new(
@@ -101,7 +100,7 @@ async fn main() -> io::Result<()> {
         env!("CARGO_PKG_VERSION"),
     )
     // Set up the application routes
-    .server(server_constructor(args.domain, args.port, Some(args.https)));
+    .server("http://localhost:3000/api");
     let ui_docs_swagger = api_service.swagger_ui();
 
     // Apply CORS middleware to the routes
