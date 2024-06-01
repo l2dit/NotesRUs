@@ -69,7 +69,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - architecture: amd64/linux
+          - architecture: linux/amd64
             arch-ref: amd64_linux
 
     permissions:
