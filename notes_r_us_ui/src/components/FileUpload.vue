@@ -33,7 +33,7 @@ export default {
         /* make a post request to the api with the file form */
         axios.post(post_route, fileForm, {
           headers: {
-            'Content-Type': 'text/markdown'
+            'Content-Type': 'multipart/form-data',
           }
         })
           .then(response => {
