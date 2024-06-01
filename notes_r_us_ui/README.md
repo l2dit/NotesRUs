@@ -1,11 +1,8 @@
-# What You Need
-1. Need to have installed trunk `cargo install trunk`
-2. Need tailwind installed on system `npm install -D tailwind`
-3. Need to have installed the rustup target `rustup target add wasm32-unknown-unknown`
+# NotesRus Frontend
+the frontend is made with Vue and Vite
 
-# To Build
-```zsh
-trunk build // Just Builds to `./dist`
 
-trunk serve // Builds And Serves The Interface
-```
+
+## Installing
+Ensure that npm is installed and run below to start the frontend.  
+`npm i; npm run dev`

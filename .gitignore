@@ -19,7 +19,9 @@ Cargo.lock
 /target
 
 # user interface 
+**/.vscode
 **/Cargo.lock
 **/target/
 **/node_modules/
 **/package-lock.json
+**/dist

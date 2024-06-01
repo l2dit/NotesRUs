@@ -1,3 +1,4 @@
+use clap::Parser;
 use notes_r_us::backend;
 use poem::{
     endpoint::StaticFilesEndpoint, listener::TcpListener, middleware::Cors, middleware::Tracing,
@@ -7,6 +8,53 @@ use poem_openapi::OpenApiService;
 use std::{env, io};
 use tracing::{info, Level};
 use tracing_subscriber::FmtSubscriber;
+
+/// Simple program to greet a person
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
+struct Args {
+    /// Port For The Server
+    #[arg(short, long, env, default_value_t = 3000)]
+    port: u16,
+
+    /// What Request Origns Are Valid
+    #[arg(short, long, env, default_value_t = String::from("0.0.0.0"))]
+    origns: String,
+
+    /// Is The Aplication Running In Kubernetes
+    #[arg(short, long, env, default_value_t = String::from("localhost"))]
+    domain: String,
+
+    /// Weather Your Server Is Being Reached From Https://
+    #[arg(long, env, default_value_t = true)]
+    https: bool,
+
+    /// Postgresql Username
+    #[arg(long, env)]
+    postgresql_username: Option<String>,
+
+    /// Postgresql Password
+    #[arg(long, env)]
+    postgresql_password: Option<String>,
+
+    /// Postgresql Connection IP
+    #[arg(long, env)]
+    postgresql_ip: Option<String>,
+
+    /// Postgresql Connection Port
+    #[arg(long, env)]
+    postgresql_port: Option<u16>,
+}
+
+fn server_constructor(domain: String, port: u16, https: Option<bool>) -> String {
+    match https {
+        Some(true) => return format!("https://{domain}:{port}"),
+
+        Some(false) => return format!("http://{domain}:{port}"),
+
+        None => return format!("{domain}:{port}"),
+    }
+}
 
 #[tokio::main]
 async fn main() -> io::Result<()> {
@@ -37,15 +85,9 @@ async fn main() -> io::Result<()> {
             "Access-Control-Allow-Methods",
             "Access-Control-Allow-Headers",
         ]);
+  
+    let args = Args::parse();
 
-    // Determine server URL based on environment
-    let server_url: &str = if cfg!(debug_assertions) {
-        "http://localhost:3000/api"
-    } else {
-        "https://notesrus.nzdev.org/api"
-    };
-
-    info!("Server URL: {}", server_url);
 
     // Create the API service
     let api_service = OpenApiService::new(
@@ -58,9 +100,8 @@ async fn main() -> io::Result<()> {
         "Notes R Us API Documentation",
         env!("CARGO_PKG_VERSION"),
     )
-    .server(server_url.to_string());
-
     // Set up the application routes
+    .server(server_constructor(args.domain, args.port, Some(args.https)));
     let ui_docs_swagger = api_service.swagger_ui();
 
     // Apply CORS middleware to the routes
@@ -78,10 +119,12 @@ async fn main() -> io::Result<()> {
             StaticFilesEndpoint::new(env::current_dir().unwrap().join("notes_r_us_ui/dist"))
                 .index_file("index.html"),
         );
-
     // Start the server
-    info!("Starting server at 0.0.0.0:3000");
-    Server::new(TcpListener::bind("0.0.0.0:3000")) // Bind to all network interfaces
-        .run(app)
-        .await
+    Server::new(TcpListener::bind(server_constructor(
+        args.origns,
+        args.port,
+        None,
+    )))
+    .run(app)
+    .await
 }

@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notes-r-us-deployment
+  namespace: notes-r-us
+  labels:
+    app: notes-r-us-app
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notes-r-us-app
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+
+  template:
+    metadata:
+      labels:
+        app: notes-r-us-app
+
+    spec:
+      containers:
+      - name: notes-r-us
+        image: ghcr.io/l2dit/notesrus:f6b4e223de5b62be810eb2f7e7e5f8e5d98e7e7a
+        ports:
+        - containerPort: 3000
+
+        env:
+        - name: PORT
+          value: "3000"
+
+        - name: ORIGNS
+          value: "0.0.0.0"
+
+        - name: DOMAIN
+          value: "notesrus.nzdev.org"
+
+        - name: HTTPS
+          value: "true"
+
+        - name: POSTGRESQL_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-notes-r-us-app
+              key: username
+
+        - name: POSTGRESQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-notes-r-us-app
+              key: password
+
+        - name: POSGRESQL_IP
+          value: "$(POOLER_RW_NOTES_R_US_SERVICE_HOST)"
+
+        - name: POSGRESQL_PORT
+          value: "$(POOLER_RW_NOTES_R_US_SERVICE_PORT)"
+
