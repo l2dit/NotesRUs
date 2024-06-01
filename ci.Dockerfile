@@ -1,4 +1,4 @@
-FROM debian:latest as server
+FROM debian:latest
 WORKDIR /usr/app
 COPY ./notes_r_us_ui/ ./notes_r_us_ui/dist
 COPY ./notes_r_us ./notes_r_us

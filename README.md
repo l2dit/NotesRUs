@@ -1,4 +1,4 @@
-[![argocd badge](https://argocd.nzdev.org/api/badge?name=notes-r-us&revision=true)](https://argocd.nzdev.org/applications/argocd/notes-r-us) [![On Push To Master](https://github.com/l2dit/NotesRUs/actions/workflows/Push_master.yaml/badge.svg)](https://github.com/l2dit/NotesRUs/actions/workflows/Push_master.yaml)
+[![argocd badge](https://argocd.nzdev.org/api/badge?name=notes-r-us&revision=true)](https://argocd.nzdev.org/applications/argocd/notes-r-us) [![Build Docker Image](https://github.com/l2dit/NotesRUs/actions/workflows/Docker_Build.yaml/badge.svg)](https://github.com/l2dit/NotesRUs/actions/workflows/Docker_Build.yaml)
 # NotesRUs
 
 Notes Aplication
