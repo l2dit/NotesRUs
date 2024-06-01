@@ -1,8 +1,10 @@
 use poem_openapi::{
     param::Path,
     payload::{Attachment, AttachmentType, Json},
+    types::ToJSON,
     OpenApi,
 };
+use serde_json;
 #[path = "responses/mod.rs"]
 pub mod responses;
 
@@ -14,7 +16,6 @@ enum ApiTags {
 
 #[derive(Debug, poem_openapi::Object, Clone)]
 pub struct File {
-    content_type: Option<String>,
     filename: Option<String>,
     data: Vec<u8>,
 }
@@ -44,7 +45,6 @@ impl Api {
         status.id += 1;
 
         let file = File {
-            content_type: upload.file.content_type().map(ToString::to_string),
             filename: upload.file.file_name().map(ToString::to_string),
             data: upload
                 .file
@@ -101,5 +101,13 @@ impl Api {
             }
             None => responses::ViewFileResponse::NotFound,
         }
+    }
+
+    /// Get all files
+    #[oai(path = "/file/all", method = "get", tag = ApiTags::API)]
+    async fn get_all_files(&self) -> poem::Result<Json<serde_json::Value>> {
+        let status = self.status.lock().await;
+
+        Ok(Json(status.files.to_json().unwrap()))
     }
 }
