@@ -3,6 +3,7 @@ import Upload from "./views/upload.vue";
 import Download from "./views/download.vue";
 import Preview from "./views/preview.vue";
 import Delete from "./views/delete.vue"
+import Browse from "./views/browse.vue"
 const routes = [
 
   {
@@ -21,13 +22,18 @@ const routes = [
   {
     path: '/delete',
     component: Delete
+  },
+  {
+    path: '/browse',
+    component: Browse
   }
+
 
 ];
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
 });
 
 export default router;

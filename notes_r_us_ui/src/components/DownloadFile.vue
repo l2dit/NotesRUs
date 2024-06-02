@@ -12,6 +12,12 @@
 
 <script>
 import axios from 'axios';
+let route;
+if (window.location.origin == "http://localhost:5173") {
+    route = "http://localhost:3000";
+} else {
+    route = "https://notesrus.nzdev.org";
+}
 
 export default {
   data() {
@@ -25,10 +31,11 @@ export default {
       /* gets the id of the file the user wants to fetch */
       const file_id = document.getElementById("file-id").value;
       /* route to make requests to */
-      const get_route = `https://notesrus.nzdev.org/api/file/download/${file_id}`;
+      let get_route = `${route}/api/file/download/${file_id}`;
       /* make get request to the route */
       axios.get(get_route)
         .then(response => {
+          console.log(response)
           /* create obj url with the blob recieved in response */
           const url = window.URL.createObjectURL(new Blob([response.data]));
           /*  create new anchor tag */

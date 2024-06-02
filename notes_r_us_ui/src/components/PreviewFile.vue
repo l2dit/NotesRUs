@@ -17,6 +17,12 @@
 import { marked } from 'marked';
 import axios from 'axios';
 import DOMPurify from 'dompurify';
+let route;
+if (window.location.origin == "http://localhost:5173") {
+    route = "http://localhost:3000/api";
+} else {
+    route = "https://notesrus.nzdev.org/api";
+}
 export default {
   data() {
     return {
@@ -29,7 +35,7 @@ export default {
         /* gets the id of the file the user wants to fetch */
       const file_id = document.getElementById("file-id").value;
       /* route to make requests to */
-      const get_route = `https://notesrus.nzdev.org/api/file/download/${file_id}`;
+      let get_route = `${route}/file/download/${file_id}`;
       /* make get request to the route */
       axios.get(get_route)
         .then(response => {
