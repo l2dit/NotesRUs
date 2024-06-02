@@ -1,16 +1,14 @@
-import { createMemoryHistory, createRouter } from 'vue-router'
+import { createWebHistory, createRouter } from 'vue-router'
 import Upload from "./views/upload.vue";
 import Download from "./views/download.vue";
 import Preview from "./views/preview.vue";
 import Delete from "./views/delete.vue"
 const routes = [
-  {
-    path: '/',
-    component: Upload
-  },
+
   {
     path: '/upload',
-    component: Upload
+    component: Upload,
+    alias: "/"
   },
   {
     path: '/download',
@@ -28,7 +26,7 @@ const routes = [
 ];
 
 const router = createRouter({
-  history: createMemoryHistory(),
+  history: createWebHistory(),
   routes
 });
 
