@@ -22,7 +22,6 @@ export default {
     return {
       /* Error is just a placeholder so that the p tag when text added does not move the whole upload section upwards */
       error_msg: 'Error',
-      computedHeight: "95vh"
     };
   },
   methods: {
