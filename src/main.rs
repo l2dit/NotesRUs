@@ -6,7 +6,7 @@ use poem::{
 };
 use poem_openapi::OpenApiService;
 use std::{env, io};
-use tracing::{info, Level};
+use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
 
 /// Simple program to greet a person
@@ -25,7 +25,7 @@ struct Args {
     #[arg(short, long, env, default_value_t = String::from("localhost"))]
     domain: String,
 
-    /// Weather Your Server Is Being Reached From Https://
+    /// Weather Your Server Is Being Reached From Https:// Assumes Port (443)
     #[arg(long, env, default_value_t = true)]
     https: bool,
 
@@ -48,7 +48,7 @@ struct Args {
 
 fn server_constructor(domain: String, port: u16, https: Option<bool>) -> String {
     match https {
-        Some(true) => return format!("https://{domain}:{port}"),
+        Some(true) => return format!("https://{domain}"),
 
         Some(false) => return format!("http://{domain}:{port}"),
 
@@ -58,6 +58,8 @@ fn server_constructor(domain: String, port: u16, https: Option<bool>) -> String 
 
 #[tokio::main]
 async fn main() -> io::Result<()> {
+    let args = Args::parse();
+
     // Set up tracing subscriber for logging
     let subscriber = FmtSubscriber::builder()
         .with_max_level(Level::TRACE)
@@ -66,11 +68,12 @@ async fn main() -> io::Result<()> {
 
     // Configure CORS settings
     let cors = Cors::new()
-        .allow_origins(vec![
-            "http://localhost:5173",
-            "http://localhost:3000",
-            "https://notesrus.nzdev.org",
-        ])
+        .allow_origins(vec![server_constructor(
+            args.domain,
+            args.port,
+            Some(args.https),
+        )
+        .as_str()])
         .allow_methods(vec!["GET", "POST", "PUT", "DELETE", "OPTIONS"])
         .allow_headers(vec![
             "Authorization",
@@ -100,7 +103,7 @@ async fn main() -> io::Result<()> {
         env!("CARGO_PKG_VERSION"),
     )
     // Set up the application routes
-    .server("http://localhost:3000/api");
+    .server(server_constructor(args.domain, args.port, Some(args.https)));
     let ui_docs_swagger = api_service.swagger_ui();
 
     // Apply CORS middleware to the routes
