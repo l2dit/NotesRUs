@@ -93,6 +93,9 @@ jobs:
           name: ${{ matrix.arch-ref }}-${{ github.sha }}
           path: ./notes_r_us
 
+      - name: Change Properties Of The Excuteable.
+        run: chmod +x ./notes_r_us
+
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v3
 
