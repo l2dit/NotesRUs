@@ -11,6 +11,8 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.5.2",
     "axios": "^1.7.2",
+    "dompurify": "^3.1.5",
+    "marked": "^12.0.2",
     "vue": "^3.4.21",
     "vue-router": "^4.3.2"
   },

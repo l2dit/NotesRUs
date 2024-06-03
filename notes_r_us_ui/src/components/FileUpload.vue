@@ -17,6 +17,7 @@ let post_route = "https://notesrus.nzdev.org/api/file/upload";
 export default {
   data() {
     return {
+      /* Error is just a placeholder so that the p tag when text added does not move the whole upload section upwards */
       error_msg: 'Error'
     };
   },
@@ -32,7 +33,7 @@ export default {
         /* make a post request to the api with the file form */
         axios.post(post_route, fileForm, {
           headers: {
-            'Content-Type': 'text/markdown'
+            'Content-Type': 'multipart/form-data',
           }
         })
           .then(response => {
