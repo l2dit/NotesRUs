@@ -1,8 +1,13 @@
 use clap::Parser;
 use notes_r_us::backend;
-use poem::{self, endpoint::StaticFilesEndpoint, listener::TcpListener, Route, Server};
+use poem::{
+    endpoint::StaticFilesEndpoint, listener::TcpListener, middleware::Cors, middleware::Tracing,
+    EndpointExt, Route, Server,
+};
 use poem_openapi::OpenApiService;
-use std::env::{self};
+use std::{env, io};
+use tracing::Level;
+use tracing_subscriber::FmtSubscriber;
 
 /// Simple program to greet a person
 #[derive(Parser, Debug)]
@@ -20,8 +25,8 @@ struct Args {
     #[arg(short, long, env, default_value_t = String::from("localhost"))]
     domain: String,
 
-    /// Weather Your Server Is Being Reached From Https://
-    #[arg(long, env, default_value_t = true)]
+    /// Weather Your Server Is Being Reached From Https:// Assumes Port (443)
+    #[arg(long, env, default_value_t = false)]
     https: bool,
 
     /// Postgresql Username
@@ -41,46 +46,109 @@ struct Args {
     postgresql_port: Option<u16>,
 }
 
-fn server_constructor(domain: String, port: u16, https: Option<bool>) -> String {
+/// Create The Server String
+fn server_constructor(
+    domain: &String,
+    port: u16,
+    suffix: Option<String>,
+    https: Option<bool>,
+) -> String {
     match https {
-        Some(true) => return format!("https://{domain}:{port}"),
+        Some(true) => return format!("https://{domain}{}", suffix.unwrap_or(String::new())),
 
-        Some(false) => return format!("http://{domain}:{port}"),
+        Some(false) => return format!("http://{domain}:{port}{}", suffix.unwrap_or(String::new())),
 
         None => return format!("{domain}:{port}"),
     }
 }
 
 #[tokio::main]
-async fn main() -> () {
+async fn main() -> io::Result<()> {
+    // Parse the Args
     let args = Args::parse();
 
+    // Set up tracing subscriber for logging
+    let subscriber = FmtSubscriber::builder()
+        .with_max_level(Level::TRACE)
+        .finish();
+    tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
+
+    println!(
+        "{}",
+        server_constructor(
+            &args.domain,
+            args.port,
+            Some(String::from("/")),
+            Some(args.https),
+        )
+    );
+
+    // Configure CORS settings
+    let cors = Cors::new()
+        .allow_origins(vec![server_constructor(
+            &args.domain,
+            args.port,
+            None,
+            Some(args.https),
+        )
+        .as_str()])
+        .allow_methods(vec!["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+        .allow_headers(vec![
+            "Authorization",
+            "Content-Type",
+            "X-Requested-With",
+            "Accept",
+            "Origin",
+        ])
+        .allow_credentials(true)
+        .expose_headers(vec![
+            "Access-Control-Allow-Origin",
+            "Access-Control-Allow-Methods",
+            "Access-Control-Allow-Headers",
+        ]);
+
+    // Create the API service
     let api_service = OpenApiService::new(
-        backend::Api,
+        backend::Api {
+            status: tokio::sync::Mutex::new(backend::Status {
+                id: 1,
+                files: Default::default(),
+            }),
+        },
         "Notes R Us API Documentation",
         env!("CARGO_PKG_VERSION"),
     )
-    .server(server_constructor(args.domain, args.port, Some(args.https)));
+    // Set up the application routes
+    .server(server_constructor(
+        &args.domain,
+        args.port,
+        Some(String::from("/api/")),
+        Some(args.https),
+    ));
     let ui_docs_swagger = api_service.swagger_ui();
+
+    // Apply CORS middleware to the routes
     let app = Route::new()
         .nest(
             "/api",
             Route::new()
                 .nest("/", api_service)
-                .nest("/docs", ui_docs_swagger),
+                .nest("/docs", ui_docs_swagger)
+                .with(cors)
+                .with(Tracing),
         )
         .nest(
             "/",
             StaticFilesEndpoint::new(env::current_dir().unwrap().join("notes_r_us_ui/dist"))
                 .index_file("index.html"),
         );
-
+    // Start the server
     Server::new(TcpListener::bind(server_constructor(
-        args.origns,
+        &args.origns,
         args.port,
+        None,
         None,
     )))
     .run(app)
     .await
-    .unwrap();
 }
