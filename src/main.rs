@@ -26,7 +26,7 @@ struct Args {
     domain: String,
 
     /// Weather Your Server Is Being Reached From Https:// Assumes Port (443)
-    #[arg(long, env, default_value_t = true)]
+    #[arg(long, env, default_value_t = false)]
     https: bool,
 
     /// Postgresql Username
@@ -47,11 +47,16 @@ struct Args {
 }
 
 /// Create The Server String
-fn server_constructor(domain: String, port: u16, https: Option<bool>) -> String {
+fn server_constructor(
+    domain: &String,
+    port: u16,
+    suffix: Option<String>,
+    https: Option<bool>,
+) -> String {
     match https {
-        Some(true) => return format!("https://{domain}"),
+        Some(true) => return format!("https://{domain}{}", suffix.unwrap_or(String::new())),
 
-        Some(false) => return format!("http://{domain}:{port}"),
+        Some(false) => return format!("http://{domain}:{port}{}", suffix.unwrap_or(String::new())),
 
         None => return format!("{domain}:{port}"),
     }
@@ -71,8 +76,9 @@ async fn main() -> io::Result<()> {
     // Configure CORS settings
     let cors = Cors::new()
         .allow_origins(vec![server_constructor(
-            args.domain,
+            &args.domain,
             args.port,
+            Some(String::from("/")),
             Some(args.https),
         )
         .as_str()])
@@ -103,7 +109,12 @@ async fn main() -> io::Result<()> {
         env!("CARGO_PKG_VERSION"),
     )
     // Set up the application routes
-    .server(server_constructor(args.domain, args.port, Some(args.https)));
+    .server(server_constructor(
+        &args.domain,
+        args.port,
+        Some(String::from("/api/")),
+        Some(args.https),
+    ));
     let ui_docs_swagger = api_service.swagger_ui();
 
     // Apply CORS middleware to the routes
@@ -123,8 +134,9 @@ async fn main() -> io::Result<()> {
         );
     // Start the server
     Server::new(TcpListener::bind(server_constructor(
-        args.origns,
+        &args.origns,
         args.port,
+        None,
         None,
     )))
     .run(app)
