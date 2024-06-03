@@ -1,10 +1,10 @@
 <template>
   <div class="center-content">
-    <form @submit.prevent="download_file">
-      <label id="button-label">Download markdown.</label>
+    <form @submit.prevent="delete_file">
+      <label id="button-label">Delete markdown.</label>
       <br />
       <input type="text" id="file-id" placeholder="File id" />
-      <button type="submit" id="file-input-button">Download</button>
+      <button type="submit" id="file-input-button">Delete</button>
     </form>
     <p id="error-message" class="error-message-hide">{{ error_msg }}</p>
   </div>
@@ -27,32 +27,21 @@ export default {
     };
   },
   methods: {
-    async download_file() {
-      /* gets the id of the file the user wants to fetch */
+    async delete_file() {
+      /* gets the id of the file the user wants to delete */
       const file_id = document.getElementById("file-id").value;
       /* route to make requests to */
-      let get_route = `${route}/api/file/download/${file_id}`;
-      /* make get request to the route */
-      axios.get(get_route)
+      const delete_route = `${route}/api/file/delete/${file_id}`;
+      /* make delete request to the route */
+      axios.delete(delete_route)
         .then(response => {
+          this.error_msg = `File with id ${file_id} has been deleted.`;
+          document.getElementById("error-message").classList.add("error-message-show")
+          setTimeout(() => {document.getElementById("error-message").classList.remove("error-message-show")}, 3000);
           console.log(response)
-          /* create obj url with the blob recieved in response */
-          const url = window.URL.createObjectURL(new Blob([response.data]));
-          /*  create new anchor tag */
-          const link = document.createElement('a');
-          /* set the location of the link to the url and set it to download with filename markdown */
-          link.href = url;
-          link.setAttribute('download', "markdown.md");
-          /* add the link tag to the body */
-          document.body.appendChild(link);
-          /* click the link to trigger download */
-          link.click();
-          /* remove the link from page */
-          document.body.removeChild(link);
-          window.URL.revokeObjectURL(url);
         })
         .catch(error => {
-          this.error_msg = `Error file failed to download: ${error.message}`;
+          this.error_msg = `Error file failed to Delete: ${error.message}`;
           document.getElementById("error-message").classList.add("error-message-show")
           setTimeout(() => {document.getElementById("error-message").classList.remove("error-message-show")}, 3000);
           console.error("Error:", error);

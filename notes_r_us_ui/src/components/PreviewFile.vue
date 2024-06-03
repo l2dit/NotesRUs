@@ -17,12 +17,17 @@
 import { marked } from 'marked';
 import axios from 'axios';
 import DOMPurify from 'dompurify';
+let route;
+if (window.location.origin == "http://localhost:5173") {
+    route = "http://localhost:3000/api";
+} else {
+    route = "https://notesrus.nzdev.org/api";
+}
 export default {
   data() {
     return {
       /* Error is just a placeholder so that the p tag when text added does not move the whole upload section upwards */
       error_msg: 'Error',
-      computedHeight: "95vh"
     };
   },
   methods: {
@@ -30,7 +35,7 @@ export default {
         /* gets the id of the file the user wants to fetch */
       const file_id = document.getElementById("file-id").value;
       /* route to make requests to */
-      const get_route = `https://notesrus.nzdev.org/api/file/download/${file_id}`;
+      let get_route = `${route}/file/download/${file_id}`;
       /* make get request to the route */
       axios.get(get_route)
         .then(response => {
@@ -41,7 +46,7 @@ export default {
           document.getElementById("preview-contents").classList.add("center-content-markdown");
         })
         .catch(error => {
-          this.error_msg = `Error file failed to preview: ${error.code}`;
+          this.error_msg = `Error file failed to preview: ${error.message}`;
           document.getElementById("error-message").classList.add("error-message-show")
           setTimeout(() => {document.getElementById("error-message").classList.remove("error-message-show")}, 3000);
           console.error("Error:", error);

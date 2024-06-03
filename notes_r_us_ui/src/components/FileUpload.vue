@@ -12,7 +12,13 @@
 
 <script>
 import axios from 'axios';
-let post_route = "https://notesrus.nzdev.org/api/file/upload";
+let post_route;
+if (window.location.origin == "http://localhost:5173") {
+    post_route = "http://localhost:3000/api/file/upload";
+} else {
+    post_route = "https://notesrus.nzdev.org/api/file/upload";
+}
+
 
 export default {
   data() {
@@ -52,14 +58,14 @@ export default {
     /* change button background to green */
     set_background_success() {
       const button = document.getElementById("file-input-button");
-      document.getElementById('error-message').classList.toggle('error-message-show');
+      document.getElementById('error-message').classList.add('error-message-show');
       button.classList.remove("error-background");
       button.classList.add("success-background");
       setTimeout(this.remove_background, 5000)
     },
     /* reset button to normal colour */
     remove_background() {
-      document.getElementById('error-message').classList.toggle('error-message-show');
+      document.getElementById('error-message').classList.remove('error-message-show');
       const button = document.getElementById("file-input-button");
       button.classList.remove("success-background");
       button.classList.remove("error-background");
@@ -68,7 +74,7 @@ export default {
     /* set button background to red */
     set_background_error() {
       const button = document.getElementById("file-input-button");
-      document.getElementById('error-message').classList.toggle('error-message-show');
+      document.getElementById('error-message').classList.add('error-message-show');
       button.classList.remove("success-background");
       button.classList.add("error-background");
       setTimeout(this.remove_background, 3000)
