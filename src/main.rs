@@ -73,12 +73,22 @@ async fn main() -> io::Result<()> {
         .finish();
     tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
 
+    println!(
+        "{}",
+        server_constructor(
+            &args.domain,
+            args.port,
+            Some(String::from("/")),
+            Some(args.https),
+        )
+    );
+
     // Configure CORS settings
     let cors = Cors::new()
         .allow_origins(vec![server_constructor(
             &args.domain,
             args.port,
-            Some(String::from("/")),
+            None,
             Some(args.https),
         )
         .as_str()])
