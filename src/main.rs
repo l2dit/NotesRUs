@@ -46,6 +46,7 @@ struct Args {
     postgresql_port: Option<u16>,
 }
 
+/// Create The Server String
 fn server_constructor(domain: String, port: u16, https: Option<bool>) -> String {
     match https {
         Some(true) => return format!("https://{domain}"),
@@ -58,6 +59,7 @@ fn server_constructor(domain: String, port: u16, https: Option<bool>) -> String 
 
 #[tokio::main]
 async fn main() -> io::Result<()> {
+    // Parse the Args
     let args = Args::parse();
 
     // Set up tracing subscriber for logging
@@ -88,8 +90,6 @@ async fn main() -> io::Result<()> {
             "Access-Control-Allow-Methods",
             "Access-Control-Allow-Headers",
         ]);
-
-    let args = Args::parse();
 
     // Create the API service
     let api_service = OpenApiService::new(
