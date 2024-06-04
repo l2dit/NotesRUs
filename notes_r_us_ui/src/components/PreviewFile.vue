@@ -1,15 +1,17 @@
 <template>
   <div id="centered-parent-div" class="center-content">
     <div id="form-file-preview-selector">
-        <form @submit.prevent="preview_file">
+      <form @submit.prevent="preview_file">
         <label id="button-label">Preview markdown.</label>
         <br />
         <input type="text" id="file-id" placeholder="File id" />
         <button type="submit" id="file-download-button">Preview</button>
-        </form>
-        <p id="error-message" class="error-message-hide">{{ error_msg }}</p>
+      </form>
+      <p id="error-message" class="error-message-hide">{{ error_msg }}</p>
     </div>
-    <html id="preview-contents"></html>
+    <html id="preview-contents">
+
+    </html>
   </div>
 </template>
 
@@ -19,9 +21,9 @@ import axios from 'axios';
 import DOMPurify from 'dompurify';
 let route;
 if (window.location.origin == "http://localhost:5173") {
-    route = "http://localhost:3000/api";
+  route = "http://localhost:3000/api";
 } else {
-    route = "https://notesrus.nzdev.org/api";
+  route = "https://notesrus.nzdev.org/api";
 }
 export default {
   data() {
@@ -32,7 +34,7 @@ export default {
   },
   methods: {
     async preview_file() {
-        /* gets the id of the file the user wants to fetch */
+      /* gets the id of the file the user wants to fetch */
       const file_id = document.getElementById("file-id").value;
       /* route to make requests to */
       let get_route = `${route}/file/download/${file_id}`;
@@ -48,7 +50,7 @@ export default {
         .catch(error => {
           this.error_msg = `Error file failed to preview: ${error.message}`;
           document.getElementById("error-message").classList.add("error-message-show")
-          setTimeout(() => {document.getElementById("error-message").classList.remove("error-message-show")}, 3000);
+          setTimeout(() => { document.getElementById("error-message").classList.remove("error-message-show") }, 3000);
           console.error("Error:", error);
         });
     },
@@ -71,18 +73,44 @@ export default {
   opacity: 1;
 }
 
+#file-id {
+  transition: all 0.3s ease-in-out;
+  height: 31px;
+  border: 2px solid gray;
+  border-right: none;
+  margin-right: 0px !important;
+}
+
+#file-id:focus {
+  border: 2.1px solid rgb(108, 108, 108);
+  border-right: none;
+  box-shadow: 0 0 11px rgba(33, 33, 33, .2);
+  outline: none;
+}
+
+#file-id:focus+#file-download-button {
+  border: 2.375px solid rgb(108, 108, 108);
+  border-left: none;
+  box-shadow: 0 0 11px rgba(33, 33, 33, .2);
+  outline: none;
+}
+
 #file-download-button {
-  transition: background-color 0.5s ease-in-out;
-  border: 1px solid #ccc;
-  background-color: #ffff;
+  transition: all 0.3s ease-in-out;
+  color: rgb(0, 0, 0);
   display: inline-block;
   padding: 6px 12px;
   cursor: pointer;
   margin-top: 10px;
+  background-color: #ffffff00;
+  border: 2px solid gray;
+  border-left: none;
+  background-color: rgb(208, 255, 127);
 }
 
 #file-download-button:hover {
-  border: 1px solid #000000;
+  color: rgb(70, 61, 61);
+  background-color: rgb(243, 255, 114);
 }
 
 input[type=text] {
@@ -100,12 +128,13 @@ input[type=text] {
   transform: translate(-50%, -50%);
   text-align: center;
 }
+
 .center-content-markdown {
-    background-color: #FFFFFF;
-    display: flex;
-    justify-content: center;
-    /* text-align: center; */
-    margin: 0 10% 10% 10%;
-    
+  background-color: #FFFFFF;
+  display: flex;
+  justify-content: center;
+  /* text-align: center; */
+  margin: 0 10% 10% 10%;
+
 }
 </style>
