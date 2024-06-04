@@ -99,16 +99,22 @@ export default {
 }
 
 #file-input-button {
-  transition: background-color 0.5s ease-in-out;
-  border: 1px solid #ccc;
-  display: inline-block;
-  padding: 6px 12px;
-  cursor: pointer;
-  margin-top: 10px;
+  transition:all 0.3s ease-in-out;
+  border:1px solid rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.7);
+  display:inline-block;
+  padding:6px 12px;
+  cursor:pointer;
+  margin-top:10px;
+  border-radius: 8px;
+  border-width: 3px;
 }
 
 #file-input-button:hover {
-  border: 1px solid #000000;
+  border: 1px solid black;
+  border-width: 3px;
+  color: black;
+  box-shadow: 0 0 11px rgba(33,33,33,.2);
 }
 
 #button-label {
