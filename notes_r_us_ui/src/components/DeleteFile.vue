@@ -3,8 +3,10 @@
     <form @submit.prevent="delete_file">
       <label id="button-label">Delete markdown.</label>
       <br />
-      <input type="text" id="file-id" placeholder="File id" />
-      <button type="submit" id="file-input-button">Delete</button>
+      <div class="delete_input_container">
+        <input type="text" id="file-id" placeholder="File id" />
+        <button type="submit" id="file-input-button">Delete</button>
+      </div>
     </form>
     <p id="error-message" class="error-message-hide">{{ error_msg }}</p>
   </div>
@@ -14,9 +16,9 @@
 import axios from 'axios';
 let route;
 if (window.location.origin == "http://localhost:5173") {
-    route = "http://localhost:3000";
+  route = "http://localhost:3000";
 } else {
-    route = "https://notesrus.nzdev.org";
+  route = "https://notesrus.nzdev.org";
 }
 
 export default {
@@ -37,13 +39,13 @@ export default {
         .then(response => {
           this.error_msg = `File with id ${file_id} has been deleted.`;
           document.getElementById("error-message").classList.add("error-message-show")
-          setTimeout(() => {document.getElementById("error-message").classList.remove("error-message-show")}, 3000);
+          setTimeout(() => { document.getElementById("error-message").classList.remove("error-message-show") }, 3000);
           console.log(response)
         })
         .catch(error => {
           this.error_msg = `Error file failed to Delete: ${error.message}`;
           document.getElementById("error-message").classList.add("error-message-show")
-          setTimeout(() => {document.getElementById("error-message").classList.remove("error-message-show")}, 3000);
+          setTimeout(() => { document.getElementById("error-message").classList.remove("error-message-show") }, 3000);
           console.error("Error:", error);
         });
     }
@@ -65,18 +67,44 @@ export default {
   opacity: 1;
 }
 
+#file-id {
+  transition: all 0.3s ease-in-out;
+  height: 31px;
+  border: 2px solid gray;
+  border-right: none;
+  margin-right: 0px !important;
+}
+
+#file-id:focus {
+  border: 2.1px solid rgb(239, 222, 164);
+  border-right: none;
+  box-shadow: 0 0 11px rgba(33, 33, 33, .2);
+  outline: none;
+}
+
+#file-id:focus+#file-input-button {
+  border: 2.375px solid rgb(239, 222, 164);
+  border-left: none;
+  box-shadow: 0 0 11px rgba(33, 33, 33, .2);
+  outline: none;
+}
+
 #file-input-button {
-  transition: background-color 0.5s ease-in-out;
-  border: 1px solid #ccc;
-  background-color: #ffff;
+  transition: all 0.3s ease-in-out;
+  color: rgba(0, 0, 0, 0.7);
   display: inline-block;
   padding: 6px 12px;
   cursor: pointer;
   margin-top: 10px;
+  background-color: #ffffff00;
+  border: 2px solid gray;
+  border-left: none;
+  background-color: rgb(255, 174, 35);
 }
 
 #file-input-button:hover {
-  border: 1px solid #000000;
+  color: rgb(255, 255, 255);
+  background-color: rgb(255, 102, 0);
 }
 
 input[type=text] {
