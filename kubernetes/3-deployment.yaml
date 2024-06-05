@@ -16,7 +16,7 @@ spec:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 1
-      maxUnavailable: 1
+      # maxUnavailable: 1
 
   template:
     metadata:
@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
       - name: notes-r-us
-        image: ghcr.io/l2dit/notesrus:8378afe869749794f8c3270482bc18ef8fbdb674
+        image: ghcr.io/l2dit/notesrus:27cbd44d0762c443065b0f1b95c1d42426889ec1
         ports:
         - containerPort: 3000
 

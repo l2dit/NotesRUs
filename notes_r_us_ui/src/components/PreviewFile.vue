@@ -19,6 +19,18 @@
 import { marked } from 'marked';
 import axios from 'axios';
 import DOMPurify from 'dompurify';
+import remark from 'remarked';
+import { unified } from 'unified';
+
+
+import rehypeKatex from 'rehype-katex'
+import rehypeStringify from 'rehype-stringify'
+import remarkMath from 'remark-math'
+import remarkParse from 'remark-parse'
+import remarkRehype from 'remark-rehype'
+import rehypeSanitize from 'rehype-sanitize'
+import rehypeMathjax from 'rehype-mathjax'
+import codeblocks from 'remark-code-blocks'
 let route;
 if (window.location.origin == "http://localhost:5173") {
   route = "http://localhost:3000/api";
@@ -40,9 +52,23 @@ export default {
       let get_route = `${route}/file/download/${file_id}`;
       /* make get request to the route */
       axios.get(get_route)
-        .then(response => {
+        .then(async response => {
+
           document.getElementById("form-file-preview-selector").style.visibility = "hidden";
-          document.getElementById("preview-contents").innerHTML = DOMPurify.sanitize(marked.parse(response.data));
+
+          const html_stuff = await unified()
+            .use(remarkParse)
+            .use(remarkRehype)
+            .use(rehypeSanitize)
+            .use(rehypeStringify)
+            .use(rehypeMathjax)
+            .use(remarkMath)
+            .use(rehypeSanitize)
+            .use(codeblocks)
+            .process(response.data)
+          console.log(html_stuff)
+          document.getElementById("preview-contents").innerHTML = html_stuff;
+
           console.log(response.data)
           document.getElementById("centered-parent-div").classList.remove("center-content");
           document.getElementById("preview-contents").classList.add("center-content-markdown");
@@ -63,6 +89,7 @@ export default {
 * {
   font-family: "Poppins", sans-serif;
 }
+
 
 .error-message-hide {
   transition: all 0.5s ease-in-out;

@@ -13,8 +13,9 @@ export default {
 </script>
 
 <style>
-#app > body {
+#app>body {
   background-color: #F4F5FA;
+
 }
 
 div {
