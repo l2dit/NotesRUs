@@ -36,13 +36,14 @@ export default {
       axios.get(get_route)
         .then(response => {
           console.log(response)
+
           /* create obj url with the blob recieved in response */
           const url = window.URL.createObjectURL(new Blob([response.data]));
           /*  create new anchor tag */
           const link = document.createElement('a');
           /* set the location of the link to the url and set it to download with filename markdown */
           link.href = url;
-          link.setAttribute('download', "markdown.md");
+          link.setAttribute('download', response.headers['content-disposition'].split('filename=')[1]);
           /* add the link tag to the body */
           document.body.appendChild(link);
           /* click the link to trigger download */
