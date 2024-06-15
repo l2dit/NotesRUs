@@ -1,0 +1,56 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table follow {
+  following_user_id integer [not null]
+  followed_user_id integer [not null]
+  created_at timestamp [not null]
+}
+
+ref: users.id < follow.following_user_id
+ref: users.id < follow.followed_user_id
+
+Table users {
+  id integer [primary key]
+  username varchar [not null]
+  first_name varchar [not null]
+  last_name varchar [not null]
+  role varchar
+  created_at timestamp [not null]
+}
+
+Table posts {
+  id integer [primary key]
+  user_id integer [not null]
+  up_votes integer [not null]
+  down_votes integer [not null]
+  title varchar [not null]
+  body text [note: 'Content of the post', not null]
+  created_at timestamp [not null]
+}
+
+Ref: posts.user_id > users.id
+
+Table comments {
+  id integer [primary key]
+  user_id integer [not null]
+  post_id integer [not null]
+  reply_coment_id integer [note: 'can be null if not a reply']
+  body text [note: 'post content', not null]
+  created_at timestamp [not null]
+  edited_at timestamp [note: 'can be null if not been edited']
+}
+
+Ref: comments.user_id > users.id
+Ref: comments.id < comments.reply_coment_id
+Ref: posts.id < comments.post_id
+
+TableGroup user {
+  users
+  follow
+}
+
+TableGroup post {
+  posts
+  comments
+}
