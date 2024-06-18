@@ -32,7 +32,7 @@ import rehypeSanitize from 'rehype-sanitize'
 import rehypeMathjax from 'rehype-mathjax'
 import codeblocks from 'remark-code-blocks'
 
-let route = process.env.NODE_ENV == "production" ? "https://notesrus.nzdev.org/api" : `http://127.0.0.1:3000/api`;
+let route = process.env.NODE_ENV == "production" ? `${window.location.origin}/api` : `http://127.0.0.1:3000/api`;;
 export default {
   data() {
     return {

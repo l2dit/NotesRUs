@@ -13,7 +13,7 @@
 <script>
 import axios from 'axios';
 
-let post_route = process.env.NODE_ENV == "production" ? "https://notesrus.nzdev.org/api" : `http://127.0.0.1:3000/api`;
+let post_route = process.env.NODE_ENV == "production" ? `${window.location.origin}/api` : `http://127.0.0.1:3000/api`;;
 
 
 export default {
