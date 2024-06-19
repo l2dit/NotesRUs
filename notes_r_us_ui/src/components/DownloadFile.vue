@@ -12,12 +12,7 @@
 
 <script>
 import axios from 'axios';
-let route;
-if (window.location.origin == "http://localhost:5173") {
-    route = "http://localhost:3000";
-} else {
-    route = "https://notesrus.nzdev.org";
-}
+let route = process.env.NODE_ENV == "production" ? "https://notesrus.nzdev.org/api" : `http://127.0.0.1:3000/api`;
 
 export default {
   data() {
@@ -54,7 +49,7 @@ export default {
         .catch(error => {
           this.error_msg = `Error file failed to download: ${error.message}`;
           document.getElementById("error-message").classList.add("error-message-show")
-          setTimeout(() => {document.getElementById("error-message").classList.remove("error-message-show")}, 3000);
+          setTimeout(() => { document.getElementById("error-message").classList.remove("error-message-show") }, 3000);
           console.error("Error:", error);
         });
     }

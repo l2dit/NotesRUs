@@ -1,6 +1,6 @@
 <template>
     <table id="tree">
-        <tr >
+        <tr>
             <th>ID</th>
             <th>Name</th>
             <th>Date Uploaded</th>
@@ -8,25 +8,22 @@
             <th>Download</th>
         </tr>
     </table>
-    <html id="preview-contents"></html>
+    <html id="preview-contents">
+
+    </html>
 </template>
 <script>
 import axios from "axios";
 import DOMPurify from "dompurify";
 import { marked } from "marked";
-let get_route;
-if (window.location.origin == "http://localhost:5173") {
-    get_route = "http://localhost:3000/api";
-} else {
-    get_route = "https://notesrus.nzdev.org/api";
-}
+let get_route = process.env.NODE_ENV == "production" ? "https://notesrus.nzdev.org/api" : `http://127.0.0.1:3000/api`;
 
 
 function retrieve_files() {
     axios.get(`${get_route}/file/all`)
         .then(response => {
             console.log(response)
-            
+
             for (let i in response.data) {
                 let tree = document.getElementById("tree")
                 let row = document.createElement("tr");
@@ -40,20 +37,20 @@ function retrieve_files() {
                 download_button.addEventListener("click", () => {
                     axios.get(`${get_route}/file/download/${i}`)
                         .then(response2 => {
-                        /* create obj url with the blob recieved in response */
-                        const url = window.URL.createObjectURL(new Blob([response2.data]));
-                        /*  create new anchor tag */
-                        const link = document.createElement('a');
-                        /* set the location of the link to the url and set it to download with filename markdown */
-                        link.href = url;
-                        link.setAttribute('download', file_name);
-                        /* add the link tag to the body */
-                        document.body.appendChild(link);
-                        /* click the link to trigger download */
-                        link.click();
-                        /* remove the link from page */
-                        document.body.removeChild(link);
-                        window.URL.revokeObjectURL(url);
+                            /* create obj url with the blob recieved in response */
+                            const url = window.URL.createObjectURL(new Blob([response2.data]));
+                            /*  create new anchor tag */
+                            const link = document.createElement('a');
+                            /* set the location of the link to the url and set it to download with filename markdown */
+                            link.href = url;
+                            link.setAttribute('download', file_name);
+                            /* add the link tag to the body */
+                            document.body.appendChild(link);
+                            /* click the link to trigger download */
+                            link.click();
+                            /* remove the link from page */
+                            document.body.removeChild(link);
+                            window.URL.revokeObjectURL(url);
                         })
                 })
                 let preview_button = document.createElement("button")
@@ -68,8 +65,8 @@ function retrieve_files() {
                             document.getElementById("preview-contents").classList.add("center-content-markdown");
                         })
                 })
-                
-                
+
+
                 file_id.innerHTML = i;
                 row.appendChild(file_id);
                 tree.appendChild(row);
@@ -83,59 +80,60 @@ function retrieve_files() {
                 tree.appendChild(row);
                 row.appendChild(download_button);
                 tree.appendChild(row);
-                
-                
+
+
             }
-    })
+        })
         .catch(error => {
             console.error(error)
-    })
+        })
 }
 retrieve_files();
-    
+
 </script>
 <style scoped>
 * {
-  font-family: "Poppins", sans-serif;
+    font-family: "Poppins", sans-serif;
 }
 
 .error-message-hide {
-  transition: all 0.5s ease-in-out;
-  opacity: 0;
+    transition: all 0.5s ease-in-out;
+    opacity: 0;
 }
 
 .error-message-show {
-  opacity: 1;
+    opacity: 1;
 }
 
 #file-download-button {
-  transition: background-color 0.5s ease-in-out;
-  border: 1px solid #ccc;
-  background-color: #ffff;
-  display: inline-block;
-  padding: 6px 12px;
-  cursor: pointer;
-  margin-top: 10px;
+    transition: background-color 0.5s ease-in-out;
+    border: 1px solid #ccc;
+    background-color: #ffff;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    margin-top: 10px;
 }
 
 #file-download-button:hover {
-  border: 1px solid #000000;
+    border: 1px solid #000000;
 }
 
 
 .center-content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
 }
+
 .center-content-markdown {
     background-color: #FFFFFF;
     display: flex;
     justify-content: center;
     /* text-align: center; */
     margin: 0 10% 10% 10%;
-    
+
 }
 </style>
