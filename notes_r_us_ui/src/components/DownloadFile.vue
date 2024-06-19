@@ -12,6 +12,7 @@
 
 <script>
 import axios from 'axios';
+
 let route = process.env.NODE_ENV == "production" ? "https://notesrus.nzdev.org/api" : `http://127.0.0.1:3000/api`;
 
 export default {
@@ -31,13 +32,14 @@ export default {
       axios.get(get_route)
         .then(response => {
           console.log(response)
+
           /* create obj url with the blob recieved in response */
           const url = window.URL.createObjectURL(new Blob([response.data]));
           /*  create new anchor tag */
           const link = document.createElement('a');
           /* set the location of the link to the url and set it to download with filename markdown */
           link.href = url;
-          link.setAttribute('download', "markdown.md");
+          link.setAttribute('download', response.headers['content-disposition'].split('filename=')[1]);
           /* add the link tag to the body */
           document.body.appendChild(link);
           /* click the link to trigger download */
@@ -71,18 +73,44 @@ export default {
   opacity: 1;
 }
 
+#file-id {
+  transition: all 0.3s ease-in-out;
+  height: 31px;
+  border: 2px solid gray;
+  border-right: none;
+  margin-right: 0px !important;
+}
+
+#file-id:focus {
+  border: 2.1px solid rgb(108, 108, 108);
+  border-right: none;
+  box-shadow: 0 0 11px rgba(33, 33, 33, .2);
+  outline: none;
+}
+
+#file-id:focus+#file-download-button {
+  border: 2.375px solid rgb(108, 108, 108);
+  border-left: none;
+  box-shadow: 0 0 11px rgba(33, 33, 33, .2);
+  outline: none;
+}
+
 #file-input-button {
-  transition: background-color 0.5s ease-in-out;
-  border: 1px solid #ccc;
-  background-color: #ffff;
+  transition: all 0.3s ease-in-out;
+  color: rgb(0, 0, 0);
   display: inline-block;
   padding: 6px 12px;
   cursor: pointer;
   margin-top: 10px;
+  background-color: #ffffff00;
+  border: 2px solid gray;
+  border-left: none;
+  background-color: rgb(208, 255, 127);
 }
 
 #file-input-button:hover {
-  border: 1px solid #000000;
+  color: rgb(70, 61, 61);
+  background-color: rgb(243, 255, 114);
 }
 
 input[type=text] {

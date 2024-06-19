@@ -85,13 +85,10 @@ async fn main() -> io::Result<()> {
 
     // Configure CORS settings
     let cors = Cors::new()
-        .allow_origins(vec![server_constructor(
-            &args.domain,
-            args.port,
-            None,
-            Some(args.https),
-        )
-        .as_str()])
+        .allow_origins(vec![
+            server_constructor(&args.domain, args.port, None, Some(args.https)).as_str(),
+            "http://localhost:5173",
+        ])
         .allow_methods(vec!["GET", "POST", "PUT", "DELETE", "OPTIONS"])
         .allow_headers(vec![
             "Authorization",
@@ -99,12 +96,18 @@ async fn main() -> io::Result<()> {
             "X-Requested-With",
             "Accept",
             "Origin",
+            "Content-Disposition",
+            "*",
         ])
         .allow_credentials(true)
         .expose_headers(vec![
-            "Access-Control-Allow-Origin",
-            "Access-Control-Allow-Methods",
-            "Access-Control-Allow-Headers",
+            "Authorization",
+            "Content-Type",
+            "X-Requested-With",
+            "Accept",
+            "Origin",
+            "Content-Disposition",
+            "*",
         ]);
 
     // Create the API service

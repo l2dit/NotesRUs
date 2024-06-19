@@ -97,18 +97,44 @@ export default {
   opacity: 1;
 }
 
+#file-id {
+  transition: all 0.3s ease-in-out;
+  height: 31px;
+  border: 2px solid gray;
+  border-right: none;
+  margin-right: 0px !important;
+}
+
+#file-id:focus {
+  border: 2.1px solid rgb(108, 108, 108);
+  border-right: none;
+  box-shadow: 0 0 11px rgba(33, 33, 33, .2);
+  outline: none;
+}
+
+#file-id:focus+#file-download-button {
+  border: 2.375px solid rgb(108, 108, 108);
+  border-left: none;
+  box-shadow: 0 0 11px rgba(33, 33, 33, .2);
+  outline: none;
+}
+
 #file-download-button {
-  transition: background-color 0.5s ease-in-out;
-  border: 1px solid #ccc;
-  background-color: #ffff;
+  transition: all 0.3s ease-in-out;
+  color: rgb(0, 0, 0);
   display: inline-block;
   padding: 6px 12px;
   cursor: pointer;
   margin-top: 10px;
+  background-color: #ffffff00;
+  border: 2px solid gray;
+  border-left: none;
+  background-color: rgb(208, 255, 127);
 }
 
 #file-download-button:hover {
-  border: 1px solid #000000;
+  color: rgb(70, 61, 61);
+  background-color: rgb(243, 255, 114);
 }
 
 input[type=text] {
