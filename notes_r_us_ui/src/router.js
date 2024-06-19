@@ -4,7 +4,6 @@ import Download from "./views/download.vue";
 import Preview from "./views/preview.vue";
 import Delete from "./views/delete.vue"
 import Browse from "./views/browse.vue"
-import Landing from "./views/landing.vue"
 const routes = [
   {
     path: '/upload',
