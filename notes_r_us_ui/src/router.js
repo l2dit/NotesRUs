@@ -7,12 +7,9 @@ import Browse from "./views/browse.vue"
 import Landing from "./views/landing.vue"
 const routes = [
   {
-    path: "/",
-    component: Landing,
-  },
-  {
     path: '/upload',
     component: Upload,
+    alias: '/'
   },
   {
     path: '/download',
