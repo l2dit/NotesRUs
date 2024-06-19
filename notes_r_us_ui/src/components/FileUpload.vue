@@ -12,12 +12,8 @@
 
 <script>
 import axios from 'axios';
-let post_route;
-if (window.location.origin == "http://localhost:5173") {
-    post_route = "http://localhost:3000/api/file/upload";
-} else {
-    post_route = "https://notesrus.nzdev.org/api/file/upload";
-}
+
+let post_route = process.env.NODE_ENV == "production" ? `${window.location.origin}/api` : `http://127.0.0.1:3000/api`;;
 
 
 export default {
@@ -37,7 +33,7 @@ export default {
         /* add file to form */
         fileForm.append("file", file);
         /* make a post request to the api with the file form */
-        axios.post(post_route, fileForm, {
+        axios.post(`${post_route}/file/upload`, fileForm, {
           headers: {
             'Content-Type': 'multipart/form-data',
           }

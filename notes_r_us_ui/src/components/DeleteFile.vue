@@ -14,13 +14,8 @@
 
 <script>
 import axios from 'axios';
-let route;
-if (window.location.origin == "http://localhost:5173") {
-  route = "http://localhost:3000";
-} else {
-  route = "https://notesrus.nzdev.org";
-}
 
+let route = process.env.NODE_ENV == "production" ? `${window.location.origin}/api` : `http://127.0.0.1:3000/api`;
 export default {
   data() {
     return {
@@ -33,7 +28,7 @@ export default {
       /* gets the id of the file the user wants to delete */
       const file_id = document.getElementById("file-id").value;
       /* route to make requests to */
-      const delete_route = `${route}/api/file/delete/${file_id}`;
+      const delete_route = `${route}/file/delete/${file_id}`;
       /* make delete request to the route */
       axios.delete(delete_route)
         .then(response => {

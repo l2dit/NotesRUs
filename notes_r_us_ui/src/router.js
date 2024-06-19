@@ -5,11 +5,10 @@ import Preview from "./views/preview.vue";
 import Delete from "./views/delete.vue"
 import Browse from "./views/browse.vue"
 const routes = [
-
   {
     path: '/upload',
     component: Upload,
-    alias: "/"
+    alias: '/'
   },
   {
     path: '/download',
@@ -26,9 +25,7 @@ const routes = [
   {
     path: '/browse',
     component: Browse
-  }
-
-
+  },
 ];
 
 const router = createRouter({
