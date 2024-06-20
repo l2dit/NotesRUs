@@ -23,7 +23,12 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(Users::UserName).string().not_null())
                     .col(ColumnDef::new(Users::FirstName).string().not_null())
                     .col(ColumnDef::new(Users::LastName).string().not_null())
-                    .col(ColumnDef::new(Users::Role).string())
+                    .col(
+                        ColumnDef::new(Users::Role)
+                            .integer()
+                            .default(0u16)
+                            .not_null(),
+                    )
                     .col(
                         ColumnDef::new(Users::CreatedAt)
                             .timestamp()

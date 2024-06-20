@@ -15,7 +15,7 @@ Table users {
   username varchar [not null]
   first_name varchar [not null]
   last_name varchar [not null]
-  role varchar
+  role interger [not null, default: 0]
   created_at timestamp [not null]
 }
 
