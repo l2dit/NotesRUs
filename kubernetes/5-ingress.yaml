@@ -17,3 +17,9 @@ spec:
       services:
         - name: public-service-notes-r-us
           port: 80
+
+    - match: Host(`auth.notesrus.nzdev.org`)
+      kind: Rule
+      services:
+        - name: public-service-hanko
+          port: 80
