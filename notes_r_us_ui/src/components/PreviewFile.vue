@@ -23,6 +23,7 @@ import remark from 'remarked';
 import { unified } from 'unified';
 
 
+
 import EasyMDE from "easymde";
 import { unified } from 'unified';
 import rehypeStringify from 'rehype-stringify';
@@ -32,12 +33,8 @@ import remarkRehype from 'remark-rehype';
 import rehypeSanitize from 'rehype-sanitize';
 import rehypeMathjax from 'rehype-mathjax';
 import rehypePrettyCode from "rehype-pretty-code";
-let route;
-if (window.location.origin == "http://localhost:5173") {
-  route = "http://localhost:3000/api";
-} else {
-  route = "https://notesrus.nzdev.org/api";
-}
+let route = process.env.NODE_ENV == "production" ? `${window.location.origin}/api` : `http://127.0.0.1:3000/api`;
+
 export default {
   data() {
     return {
@@ -48,6 +45,7 @@ export default {
   methods: {
     async preview_file() {
       /* gets the id of the file the user wants to fetch */
+      console.log(process.env.NODE_ENV)
       const file_id = document.getElementById("file-id").value;
       /* route to make requests to */
       let get_route = `${route}/file/download/${file_id}`;

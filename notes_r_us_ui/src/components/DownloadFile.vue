@@ -12,12 +12,8 @@
 
 <script>
 import axios from 'axios';
-let route;
-if (window.location.origin == "http://localhost:5173") {
-  route = "http://localhost:3000";
-} else {
-  route = "https://notesrus.nzdev.org";
-}
+
+let route = process.env.NODE_ENV == "production" ? `${window.location.origin}/api` : `http://127.0.0.1:3000/api`;`;
 
 export default {
   data() {
