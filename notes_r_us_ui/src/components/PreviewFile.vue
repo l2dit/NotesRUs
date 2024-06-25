@@ -16,6 +16,7 @@
 </template>
 
 <script>
+import axios from "axios";
 import EasyMDE from "easymde";
 import { unified } from 'unified';
 import rehypeStringify from 'rehype-stringify';
