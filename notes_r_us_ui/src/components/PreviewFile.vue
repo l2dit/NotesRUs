@@ -16,14 +16,7 @@
 </template>
 
 <script>
-import { marked } from 'marked';
-import axios from 'axios';
-import DOMPurify from 'dompurify';
-import remark from 'remarked';
-import { unified } from 'unified';
-
-
-
+import axios from "axios";
 import EasyMDE from "easymde";
 import { unified } from 'unified';
 import rehypeStringify from 'rehype-stringify';
