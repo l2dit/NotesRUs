@@ -23,16 +23,18 @@ import remark from 'remarked';
 import { unified } from 'unified';
 
 
-import rehypeKatex from 'rehype-katex'
-import rehypeStringify from 'rehype-stringify'
-import remarkMath from 'remark-math'
-import remarkParse from 'remark-parse'
-import remarkRehype from 'remark-rehype'
-import rehypeSanitize from 'rehype-sanitize'
-import rehypeMathjax from 'rehype-mathjax'
-import codeblocks from 'remark-code-blocks'
 
-let route = process.env.NODE_ENV == "production" ? `${window.location.origin}/api` : `http://127.0.0.1:3000/api`;;
+import EasyMDE from "easymde";
+import { unified } from 'unified';
+import rehypeStringify from 'rehype-stringify';
+import remarkMath from 'remark-math';
+import remarkParse from 'remark-parse';
+import remarkRehype from 'remark-rehype';
+import rehypeSanitize from 'rehype-sanitize';
+import rehypeMathjax from 'rehype-mathjax';
+import rehypePrettyCode from "rehype-pretty-code";
+let route = process.env.NODE_ENV == "production" ? `${window.location.origin}/api` : `http://127.0.0.1:3000/api`;
+
 export default {
   data() {
     return {
@@ -60,9 +62,10 @@ export default {
             .use(rehypeStringify)
             .use(rehypeMathjax)
             .use(remarkMath)
-            .use(rehypeSanitize)
-            .use(codeblocks)
+            .use(remarkParse)
+            .use(rehypePrettyCode, { theme: 'slack-dark' })
             .process(response.data)
+
           console.log(html_stuff)
           document.getElementById("preview-contents").innerHTML = html_stuff;
 
