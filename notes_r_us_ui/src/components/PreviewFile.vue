@@ -25,7 +25,6 @@ import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import rehypeSanitize from 'rehype-sanitize';
 import rehypeMathjax from 'rehype-mathjax';
-import rehypePrettyCode from "rehype-pretty-code";
 let route = process.env.NODE_ENV == "production" ? `${window.location.origin}/api` : `http://127.0.0.1:3000/api`;
 
 export default {
