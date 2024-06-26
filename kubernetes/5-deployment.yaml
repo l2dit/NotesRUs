@@ -38,6 +38,11 @@ spec:
         - '--config'
         - /etc/config/config.yaml
 
+        volumeMounts:
+        - name: hanko-config
+          mountPath: /etc/config/config.yaml
+          subPath: config.yaml
+
         ports:
         - name: http-public
           containerPort: 8000
@@ -47,6 +52,18 @@ spec:
           protocol: TCP
 
         env:
+        - name: PASSWORDCODE_SMTP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: smtp-credentials
+              key: password
+
+        - name: SECRETS_KEYS
+          valueFrom:
+            secretKeyRef:
+              name: hanko-secret
+              key: keys
+
         - name: DATABASE_USER
           valueFrom:
             secretKeyRef:
@@ -80,10 +97,17 @@ spec:
 
           command:
             - /hanko
-  
+
           args:
             - migrate
             - up
+            - '--config'
+            - /etc/config/config.yaml
+
+          volumeMounts:
+          - name: hanko-config
+            mountPath: /etc/config/config.yaml
+            subPath: config.yaml
 
           env:
           - name: DATABASE_USER
@@ -109,6 +133,11 @@ spec:
 
           - name: DATABASE_DATABASE
             value: "hanko"
+
+      volumes:
+      - name: hanko-config
+        configMap:
+          name: hanko-config
 
 ---
 apiVersion: apps/v1

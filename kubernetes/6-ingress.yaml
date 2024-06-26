@@ -1,0 +1,58 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ingress-notes-r-us
+  namespace: notes-r-us
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+    link.argocd.argoproj.io/external-link: 'https://notesrus.nzdev.org/'
+
+spec:
+  entryPoints:
+  - websecure
+
+  routes:
+    - match: Host(`notesrus.nzdev.org`)
+      kind: Rule
+      services:
+        - name: public-service-notes-r-us
+          port: 80
+
+  tls:
+    secretName: nzdev-org-production-tls
+---
+spec: 
+  entryPoints:
+    - websecure
+
+  routes:
+    - match: Host(`auth.notesrus.nzdev.org`)
+      kind: Rule
+      services:
+        - name: public-service-hanko
+          port: 80
+
+    - match: Host(`admin.notesrus.nzdev.org`)
+      kind: Rule
+      services:
+        - name: admin-service-hanko
+          port: 80
+
+  tls:
+    secretName: notesrus-nzdev-org-production-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: notesrus-tls
+  namespace: nzdev-org
+
+spec:
+  secretName: notesrus-nzdev-org-production-tls
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+
+  commonName: "*.notesrus.nzdev.org"
+  dnsNames:
+    - "*.notesrus.nzdev.org"

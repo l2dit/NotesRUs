@@ -1,7 +1,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: game-demo
+  name: hanko-config
+  namespace: notes-r-us
 data:
   ## Hanko Service configuration ##
   #
@@ -27,14 +28,14 @@ data:
         # A list of allowed origins that may access the public endpoints.
         #
         allow_origins:
-          - "https://hanko.io"
-          - "https://example.com"
+          - "https://*.nzdev.org"
+          - "https://*.*.nzdev.org"
         ## unsafe_wildcard_origin_allowed ##
         #
         # If allow_origins contains a wildcard '*' origin, this flag must explicitly be set to 'true'.
         # Using wildcard '*' origins is insecure and potentially leads to cross-origin attacks.
         #
-        unsafe_wildcard_origin_allowed: false
+        unsafe_wildcard_origin_allowed: true
     ## admin ##
     #
     # Configuration for the admin API.
@@ -45,53 +46,17 @@ data:
       # The address the admin API will listen and handle requests on.
       #
       address: ":8001"
-  ## database ##
-  #
-  # Configures the backend where to persist data.
-  #
-  database:
-    host: "localhost"
-    ## port ##
-    #
-    # Default value: 5432
-    #
-    port: "5432"
-    ## dialect ##
-    #
-    # Which database will be used.
-    #
-    # One of:
-    # - cockroach
-    # - mariadb
-    # - mysql
-    # - postgres
-    #
-    dialect: "postgres"
-    user: "CHANGE-ME"
-    password: "CHANGE-ME"
-    database: "CHANGE-ME"
-    ## url ##
-    #
-    # Instead of using the individual fields above this field can be used.
-    # When this field is set, it will be used and the fields above have no effect.
-    #
-    # Url schema: `dialect://username:password@host:port/database`
-    #
-    # Examples:
-    # - postgres://hanko:hanko@localhost:5432/hanko
-    #
-    url: "CHANGE-ME"
   service:
     ## name ##
     #
     # The name of the service. This value will be used in the subject header of emails.
     #
-    name: "Example Project"
+    name: "Notes R Us"
   ## secrets ##
   #
   # Configures secrets used for en-/decrypting JWKs.
   #
-  secrets:
+  # secrets:
     ## keys ##
     #
     # Keys secrets are used to en- and decrypt the JWKs which get used to sign the JWTs.
@@ -105,8 +70,8 @@ data:
     #
     # Each key must be at least 16 characters long.
     #
-    keys:
-      - "CHANGE-ME"
+    # keys:
+      # - "CHANGE-ME"
   session:
     ## lifespan ##
     #
@@ -120,13 +85,13 @@ data:
     # - 720h
     # - 15h115m
     #
-    lifespan: "1h"
+    lifespan: "24h"
     cookie:
       ## domain ##
       #
       # The domain the cookie will be bound to. Works for subdomains, but not cross-domain.
       #
-      domain: "CHANGE-ME"
+      domain: "nzdev.org"
       ## http_only ##
       #
       # HTTP-only cookies or accessible by javascript.
@@ -182,14 +147,14 @@ data:
     #
     # Default value: false
     #
-    enabled: false
+    enabled: true
     ## min_password_length ##
     #
     # Sets the minimum password length.
     #
     # Default value: 8
     #
-    min_password_length: 8
+    min_password_length: 10
   passcode:
     ## ttl ##
     #
@@ -205,27 +170,27 @@ data:
       #
       # Default value: passcode@hanko.io
       #
-      from_address: passcode@hanko.io"
+      from_address: "notesrus.noreply@gmail.com"
       ## from_name ##
       #
       # The sender name of emails sent to users.
       #
       # Default value: Hanko
       #
-      from_name: "Hanko"
+      from_name: "Notes R Us (No Reply)"
     ## smtp ##
     #
     # SMTP server config to send emails.
     #
     smtp:
-      host: "CHANGE-ME"
+      host: "smtp.gmail.com"
       ## port ##
       #
       # Default: 465
       #
-      port: ""
-      user: "CHANGE-ME"
-      password: "CHANGE-ME"
+      port: "465"
+      user: "notesrus.noreply@gmail.com"
+      # password: "CHANGE-ME" Use A Kubernetes Secret
   ## webauthn ##
   #
   # Configures Web Authentication (WebAuthn).
@@ -261,7 +226,7 @@ data:
       # - example.com
       # - subdomain.example.com
       #
-      id: "localhost"
+      id: "auth.notesrus.nzdev.org"
       ## display_name ##
       #
       # The service's name that some WebAuthn Authenticators will display to the user during registration and authentication ceremonies.
@@ -271,7 +236,7 @@ data:
       # - Hanko GmbH
       # - Acme, Inc.
       #
-      display_name: ""
+      display_name: "Notes R Us"
       ## origins ##
       #
       # A list of origins for which WebAuthn credentials will be accepted by the server. Must include the protocol and can only be the effective domain,
@@ -285,8 +250,8 @@ data:
       # - https://login.example.com
       #
       origins:
-        - "android:apk-key-hash:nLSu7wVTbnMOxLgC52f2faTnv..."
-        - "https://login.example.com"
+        - "https://auth.notesrus.nzdev.org"
+        - "https://notesrus.nzdev.org"
   ## email_delivery ##
   #
   # Settings needed for email delivery.
@@ -391,17 +356,17 @@ data:
     #
     # If you specify redis as backend you have to specify these values
     #
-    redis_config:
+    # redis_config:
       ## address
       #
       # Address of your redis instance in the form of host[:port][/database]
       #
-      address: "CHANGE-ME"
+      # address: "CHANGE-ME"
       ## password
       #
       # The password of the redis instance
       #
-      password: "CHANGE_ME"
+      # password: "CHANGE_ME"
   emails:
     ## require_verification
     #
@@ -425,14 +390,14 @@ data:
   #
   # Configures third party providers
   #
-  third_party:
+    # third_party:
     ## redirect_url
     #
     # Required if any providers are enabled.
     # The URL the third party provider redirects to with an authorization code. Must consist of the base URL of
     # your running hanko backend instance and the callback endpoint, i.e. <YOUR_BACKEND_INSTANCE>/thirdparty/callback.
     #
-    redirect_url: "CHANGE_ME"
+    # redirect_url: "CHANGE_ME"
     ## allowed_redirect_urls
     #
     # Required if any providers are enabled.
@@ -451,8 +416,8 @@ data:
     # Examples:
     # - http://localhost:8888
     #
-    allowed_redirect_urls:
-      - "CHANGE_ME"
+    # allowed_redirect_urls:
+      # - "CHANGE_ME"
     ##
     #
     # Required if any providers are enabled. URL the backend redirects to if an error occurs during third party sign-in. Errors are provided
@@ -469,24 +434,24 @@ data:
     # Example:
     # - http://localhost:8888/error
     #
-    error_redirect_url: "CHANGE_ME"
+    # error_redirect_url: "CHANGE_ME"
     ##
     #
     # The third party provider configurations. Unknown providers will be ignored.
     #
-    providers:
+    # providers:
       ##
       #
       # The Apple provider configuration
       #
-      apple:
+      # apple:
         ##
         #
         # Enable or disable the Apple provider.
         #
         # Default: false
         #
-        enabled: false
+        # enabled: false
         ##
         #
         # The client ID (Services ID) of your Apple credentials.
@@ -495,7 +460,7 @@ data:
         # Required if provider is enabled.
         #
         #
-        client_id: "CHANGE_ME"
+        # client_id: "CHANGE_ME"
         ##
         #
         # The generated secret of your Apple credentials.
@@ -504,7 +469,7 @@ data:
         #
         # Required if provider is enabled.
         #
-        secret: "CHANGE_ME"
+        # secret: "CHANGE_ME"
         ##
         #
         # Indicates whether accounts can be linked with this provider.
@@ -514,19 +479,19 @@ data:
         #
         # Default: true
         #
-        allow_linking: true
+        # allow_linking: true
       ##
       #
       # The Google provider configuration
       #
-      google:
+      # google:
         ##
         #
         # Enable or disable the Google provider.
         #
         # Default: false
         #
-        enabled: false
+        # enabled: false
         ##
         #
         # The client ID of your Google OAuth credentials.
@@ -534,7 +499,7 @@ data:
         #
         # Required if provider is enabled.
         #
-        client_id: "CHANGE_ME"
+        # client_id: "CHANGE_ME"
         ##
         #
         # The secret of your Google OAuth credentials
@@ -542,7 +507,7 @@ data:
         #
         # Required if provider is enabled.
         #
-        secret: "CHANGE_ME"
+        # secret: "CHANGE_ME"
         ##
         #
         # Indicates whether accounts can be linked with this provider.
@@ -552,19 +517,19 @@ data:
         #
         # Default: true
         #
-        allow_linking: true
+        # allow_linking: true
       ##
       #
       # The GitHub provider configuration
       #
-      github:
+      # github:
         ##
         #
         # Enable or disable the GitHub provider.
         #
         # Default: false
         #
-        enabled: false
+        # enabled: false
         ##
         #
         # The client ID of your GitHub OAuth credentials.
@@ -572,7 +537,7 @@ data:
         #
         # Required if provider is enabled.
         #
-        client_id: "CHANGE_ME"
+        # client_id: "CHANGE_ME"
         ##
         #
         # The secret of your GitHub OAuth credentials.
@@ -580,7 +545,7 @@ data:
         #
         # Required if provider is enabled.
         #
-        secret: "CHANGE_ME"
+        # secret: "CHANGE_ME"
         ##
         #
         # Indicates whether accounts can be linked with this provider.
@@ -590,19 +555,19 @@ data:
         #
         # Default: true
         #
-        allow_linking: true
+        # allow_linking: true
       ##
       #
       # The Discord provider configuration
       #
-      discord:
+      # discord:
         ##
         #
         # Enable or disable the Discord provider.
         #
         # Default: false
         #
-        enabled: false
+        # enabled: false
         ##
         #
         # The client ID of your Discord OAuth credentials.
@@ -610,7 +575,7 @@ data:
         #
         # Required if provider is enabled.
         #
-        client_id: "CHANGE_ME"
+        # client_id: "CHANGE_ME"
         ##
         #
         # The secret of your Discord OAuth credentials.
@@ -618,7 +583,7 @@ data:
         #
         # Required if provider is enabled.
         #
-        secret: "CHANGE_ME"
+        # secret: "CHANGE_ME"
         ##
         #
         # Indicates whether accounts can be linked with this provider.
@@ -628,19 +593,19 @@ data:
         #
         # Default: true
         #
-        allow_linking: true
+        # allow_linking: true
       ##
       #
       # The Microsoft provider configuration
       #
-      microsoft:
+      # microsoft:
         ##
         #
         # Enable or disable the Microsoft provider.
         #
         # Default: false
         #
-        enabled: false
+        # enabled: false
         ##
         #
         # The client ID of your Microsoft OAuth credentials.
@@ -648,7 +613,7 @@ data:
         #
         # Required if provider is enabled.
         #
-        client_id: "CHANGE_ME"
+        # client_id: "CHANGE_ME"
         ##
         #
         # The secret of your Microsoft OAuth credentials.
@@ -656,7 +621,7 @@ data:
         #
         # Required if provider is enabled.
         #
-        secret: "CHANGE_ME"
+        # secret: "CHANGE_ME"
         ##
         #
         # Indicates whether accounts can be linked with this provider.
@@ -667,19 +632,19 @@ data:
         #
         # Default: true
         #
-        allow_linking: false
+        # allow_linking: false
       ##
       #
       # The LinkedIn provider configuration
       #
-      linkedin:
+      # linkedin:
         ##
         #
         # Enable or disable the LinkedIn provider.
         #
         # Default: false
         #
-        enabled: false
+        # enabled: false
         ##
         #
         # The client ID of your LinkedIn OAuth credentials.
@@ -687,7 +652,7 @@ data:
         #
         # Required if provider is enabled.
         #
-        client_id: "CHANGE_ME"
+        # client_id: "CHANGE_ME"
         ##
         #
         # The secret of your LinkedIn OAuth credentials.
@@ -695,7 +660,7 @@ data:
         #
         # Required if provider is enabled.
         #
-        secret: "CHANGE_ME"
+        # secret: "CHANGE_ME"
         ##
         #
         # Indicates whether accounts can be linked with this provider.
@@ -706,7 +671,7 @@ data:
         #
         # Default: true
         #
-        allow_linking: false
+        # allow_linking: false
   log:
     ## log_health_and_metrics
     #
@@ -845,7 +810,7 @@ data:
       #
       # Default: false
       #
-      - enabled: true
+      - enabled: false
         ##
         #
         # Human-readable name of the identity provider
