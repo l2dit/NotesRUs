@@ -24,6 +24,7 @@ spec:
         app: hanko-app
 
     spec:
+      serviceAccountName: notes-r-us-sa
       containers:
       - name: hanko
         image: ghcr.io/teamhanko/hanko:main
@@ -138,6 +139,13 @@ spec:
       - name: hanko-config
         configMap:
           name: hanko-config
+
+      - name: notesrus-secret
+        csi:
+          driver: 'secrets-store.csi.k8s.io'
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: 'notes-r-us-creds'
 
 ---
 apiVersion: apps/v1
