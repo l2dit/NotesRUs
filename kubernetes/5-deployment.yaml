@@ -44,6 +44,10 @@ spec:
           mountPath: /etc/config/config.yaml
           subPath: config.yaml
 
+        - name: 'notesrus-secret'
+          mountPath: '/mnt/secrets-store'
+          readOnly: true
+
         ports:
         - name: http-public
           containerPort: 8000
@@ -53,17 +57,17 @@ spec:
           protocol: TCP
 
         env:
-        - name: PASSWORDCODE_SMTP_PASSWORD
-          valueFrom:
+        - name: SECRET_KEYS
+          valueFrom: 
             secretKeyRef:
-              name: smtp-credentials
-              key: password
+              name: notes-r-us-secrets
+              key: hanko_secret
 
-        - name: SECRETS_KEYS
+        - name: PASSCODE_SMTP_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: hanko-secret
-              key: keys
+              name: notes-r-us-secrets
+              key: email_password
 
         - name: DATABASE_USER
           valueFrom:
@@ -110,7 +114,23 @@ spec:
             mountPath: /etc/config/config.yaml
             subPath: config.yaml
 
+          - name: 'notesrus-secret'
+            mountPath: '/mnt/secrets-store'
+            readOnly: true
+
           env:
+          - name: SECRET_KEYS
+            valueFrom: 
+              secretKeyRef:
+                name: notes-r-us-secrets
+                key: hanko_secret
+
+          - name: PASSCODE_SMTP_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: notes-r-us-secrets
+                key: email_password
+
           - name: DATABASE_USER
             valueFrom:
               secretKeyRef:
@@ -193,21 +213,21 @@ spec:
         - name: HTTPS
           value: "true"
 
-        - name: POSTGRESQL_USERNAME
+        - name: DATABASE_USERNAME
           valueFrom:
             secretKeyRef:
               name: postgresql-notes-r-us-app
               key: username
 
-        - name: POSTGRESQL_PASSWORD
+        - name: DATABASE_PASSWORD
           valueFrom:
             secretKeyRef:
               name: postgresql-notes-r-us-app
               key: password
 
-        - name: POSGRESQL_IP
+        - name: DATABASE_IP
           value: "$(POOLER_RW_NOTES_R_US_SERVICE_HOST)"
 
-        - name: POSGRESQL_PORT
+        - name: DATABASE_PORT
           value: "$(POOLER_RW_NOTES_R_US_SERVICE_PORT)"
 
