@@ -13,7 +13,7 @@
 <script>
 import axios from 'axios';
 
-let route = process.env.NODE_ENV == "production" ? `${window.location.origin}/api` : `http://127.0.0.1:3000/api`;`;
+let route = process.env.NODE_ENV == "production" ? `${window.location.origin}/api` : `http://127.0.0.1:3000/api`;
 
 export default {
   data() {
