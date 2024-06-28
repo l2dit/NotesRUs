@@ -1,0 +1,233 @@
+apiVersion: app/v1
+kind: Deployment
+metadata:
+  name: hanko-deployment
+  namespace: notes-r-us
+  lables:
+    app: hanko-app
+
+spec:
+  replicas: 1
+  selector:
+    matchLables:
+      app: hanko-app
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      # maxUnavailable: 1
+
+  template:
+    metadata:
+      labels:
+        app: hanko-app
+
+    spec:
+      serviceAccountName: notes-r-us-sa
+      containers:
+      - name: hanko
+        image: ghcr.io/teamhanko/hanko:main
+        imagePullPolicy: IfNotPresent
+
+        command:
+        - /hanko
+
+        args:
+        - serve
+        - all
+        - '--config'
+        - /etc/config/config.yaml
+
+        volumeMounts:
+        - name: hanko-config
+          mountPath: /etc/config/config.yaml
+          subPath: config.yaml
+
+        - name: 'notesrus-secret'
+          mountPath: '/mnt/secrets-store'
+          readOnly: true
+
+        ports:
+        - name: http-public
+          containerPort: 8000
+          protocol: TCP
+        - name: http-admin
+          containerPort: 8001
+          protocol: TCP
+
+        env:
+        - name: SECRET_KEYS
+          valueFrom: 
+            secretKeyRef:
+              name: notes-r-us-secrets
+              key: hanko_secret
+
+        - name: PASSCODE_SMTP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: notes-r-us-secrets
+              key: email_password
+
+        - name: DATABASE_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-notes-r-us-app
+              key: username
+
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-notes-r-us-app
+              key: password
+
+        - name: DATABASE_HOST
+          value: "$(POOLER_RW_NOTES_R_US_SERVICE_HOST)"
+
+        - name: DATABASE_PORT
+          value: "$(POOLER_RW_NOTES_R_US_SERVICE_PORT)"
+
+        - name: DATABASE_DIALECT
+          value: "postgres"
+
+        - name: DATABASE_DATABASE
+          value: "hanko"
+
+
+
+        initContainers:
+        - name: hanko-migrate
+          image: ghcr.io/teamhanko/hanko:main
+          imagePullPolicy: IfNotPresent
+
+          command:
+            - /hanko
+
+          args:
+            - migrate
+            - up
+            - '--config'
+            - /etc/config/config.yaml
+
+          volumeMounts:
+          - name: hanko-config
+            mountPath: /etc/config/config.yaml
+            subPath: config.yaml
+
+          - name: 'notesrus-secret'
+            mountPath: '/mnt/secrets-store'
+            readOnly: true
+
+          env:
+          - name: SECRET_KEYS
+            valueFrom: 
+              secretKeyRef:
+                name: notes-r-us-secrets
+                key: hanko_secret
+
+          - name: PASSCODE_SMTP_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: notes-r-us-secrets
+                key: email_password
+
+          - name: DATABASE_USER
+            valueFrom:
+              secretKeyRef:
+                name: postgresql-notes-r-us-app
+                key: username
+
+          - name: DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: postgresql-notes-r-us-app
+                key: password
+
+          - name: DATABASE_HOST
+            value: "$(POOLER_RW_NOTES_R_US_SERVICE_HOST)"
+
+          - name: DATABASE_PORT
+            value: "$(POOLER_RW_NOTES_R_US_SERVICE_PORT)"
+
+          - name: DATABASE_DIALECT
+            value: "postgres"
+
+          - name: DATABASE_DATABASE
+            value: "hanko"
+
+      volumes:
+      - name: hanko-config
+        configMap:
+          name: hanko-config
+
+      - name: notesrus-secret
+        csi:
+          driver: 'secrets-store.csi.k8s.io'
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: 'notes-r-us-creds'
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notes-r-us-deployment
+  namespace: notes-r-us
+  labels:
+    app: notes-r-us-app
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notes-r-us-app
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      # maxUnavailable: 1
+
+  template:
+    metadata:
+      labels:
+        app: notes-r-us-app
+
+    spec:
+      containers:
+      - name: notes-r-us
+        image: ghcr.io/l2dit/notesrus:27cbd44d0762c443065b0f1b95c1d42426889ec1
+        ports:
+        - containerPort: 3000
+
+        env:
+        - name: PORT
+          value: "3000"
+
+        - name: ORIGNS
+          value: "0.0.0.0"
+
+        - name: DOMAIN
+          value: "notesrus.nzdev.org"
+
+        - name: HTTPS
+          value: "true"
+
+        - name: DATABASE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-notes-r-us-app
+              key: username
+
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-notes-r-us-app
+              key: password
+
+        - name: DATABASE_IP
+          value: "$(POOLER_RW_NOTES_R_US_SERVICE_HOST)"
+
+        - name: DATABASE_PORT
+          value: "$(POOLER_RW_NOTES_R_US_SERVICE_PORT)"
+

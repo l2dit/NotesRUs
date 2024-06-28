@@ -1,5 +1,5 @@
 # Kubernetes
-Manifests are complex if you want a high level look of whats happening look [HERE](https://argocd.nzdev.org/applications/argocd/notes-r-us). Also i have exposed the necessary environment variables to the container for a data base connection and application configuration.
+Manifests are complex if you want a visual representation of whats happening look [HERE](https://argocd.nzdev.org/applications/argocd/notes-r-us). Also i have exposed the necessary environment variables to the container for a data base connection and application configuration. This not to be used directly to deploy the appliction yourself becuse there are sevral sevices not inclued in this. However it is a good refrance for copying.
 
 ```bash title="Enviroment Vars"
 # Application Enviroment Vars
@@ -8,9 +8,9 @@ ORIGNS="0.0.0.0"
 DOMAIN="notesrus.nzdev.org"
 HTTPS="true"
 
-# PostgreSQL Enviroment Vars
-POSTGRESQL_USERNAME=<username_secret>
-POSTGRESQL_PASSWORD=<password_secret>
-POSGRESQL_IP=<postgresql_ip_address>
-POSGRESQL_PORT=<posgresql_port>
+# Database Enviroment Vars
+DATABASE_USERNAME=<username_secret>
+DATABASE_PASSWORD=<password_secret>
+DATABASE_IP=<postgresql_ip_address>
+DATABASE_PORT=<posgresql_port>
 ```

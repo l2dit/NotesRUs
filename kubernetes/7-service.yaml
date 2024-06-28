@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: public-service-notes-r-us
+  namespace: notes-r-us
+
+spec:
+  selector:
+    app: notes-r-us-app
+
+  ports:
+    - name: http
+      targetPort: 3000
+      port: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: public-service-hanko-auth
+  namespace: notes-r-us
+
+spec:
+  selector:
+    app: hanko-app
+
+  ports:
+    - name: http-public
+      targetPort: 8000
+      port: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin-service-hanko-auth
+  namespace: notes-r-us
+
+spec:
+  slector:
+    app: hanko-app
+
+  ports:
+    - name: http-admin
+      targetPort: 8001
+      port: 80
