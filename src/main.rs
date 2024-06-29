@@ -17,9 +17,16 @@ async fn main() -> io::Result<()> {
     // Parse the Args
     let args = cli::Args::parse();
 
-    let _connection: DatabaseConnection = database::setup::set_up_db("sqlite::memory:", "wow")
-        .await
-        .expect("Could Not Connect To Data Base");
+    let _connection: DatabaseConnection = database::setup::set_up_db(
+        format!(
+            "postgres://{:?}:{:?}@{:?}:{:?}",
+            args.database_username, args.database_password, args.database_ip, args.database_port
+        )
+        .as_str(),
+        "temp",
+    )
+    .await
+    .expect("Could Not Connect To Data Base");
 
     // Set up tracing subscriber for logging
     let subscriber = FmtSubscriber::builder()
