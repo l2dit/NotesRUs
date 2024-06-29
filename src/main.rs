@@ -19,7 +19,7 @@ async fn main() -> io::Result<()> {
 
     let _connection: DatabaseConnection = database::setup::set_up_db(
         format!(
-            "postgres://{:?}:{:?}@{:?}:{:?}/temp",
+            "postgres://{:?}:{:?}@{:?}:{:?}/",
             args.database_username, args.database_password, args.database_ip, args.database_port
         )
         .as_str(),
