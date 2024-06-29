@@ -37,7 +37,7 @@ metadata:
   namespace: notes-r-us
 
 spec:
-  slector:
+  selector:
     app: hanko-app
 
   ports:

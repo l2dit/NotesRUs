@@ -54,7 +54,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: notesrus-tls
-  namespace: nzdev-org
+  namespace: notes-r-us
 
 spec:
   secretName: notesrus-nzdev-org-production-tls

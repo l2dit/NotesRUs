@@ -3,13 +3,13 @@ kind: Deployment
 metadata:
   name: hanko-deployment
   namespace: notes-r-us
-  lables:
+  labels:
     app: hanko-app
 
 spec:
   replicas: 1
   selector:
-    matchlabels:
+    matchLabels:
       app: hanko-app
 
   strategy:
@@ -95,7 +95,7 @@ spec:
 
 
 
-        initContainers:
+      initContainers:
         - name: hanko-migrate
           image: ghcr.io/teamhanko/hanko:main
           imagePullPolicy: IfNotPresent
@@ -179,7 +179,7 @@ metadata:
 spec:
   replicas: 1
   selector:
-    matchlabels:
+    matchLabels:
       app: notes-r-us-app
 
   strategy:
@@ -196,7 +196,7 @@ spec:
     spec:
       containers:
       - name: notes-r-us
-        image: ghcr.io/l2dit/notesrus:27cbd44d0762c443065b0f1b95c1d42426889ec1
+        image: ghcr.io/l2dit/notesrus:e001fa13a04c13193a29705d2e97693b09bdd1d6
         ports:
         - containerPort: 3000
 
