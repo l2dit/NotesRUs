@@ -57,7 +57,7 @@ spec:
           protocol: TCP
 
         env:
-        - name: SECRET_KEYS
+        - name: SECRET_KEYS_0
           valueFrom: 
             secretKeyRef:
               name: notes-r-us-secrets
@@ -119,7 +119,7 @@ spec:
             readOnly: true
 
           env:
-          - name: SECRET_KEYS
+          - name: SECRET_KEYS_0
             valueFrom: 
               secretKeyRef:
                 name: notes-r-us-secrets
