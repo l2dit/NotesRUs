@@ -106,8 +106,8 @@ spec:
           args:
             - migrate
             - up
-            - '--config'
-            - /etc/config/config.yaml
+            # - '--config'
+            # - /etc/config/config.yaml
 
           volumeMounts:
           # - name: hanko-config
