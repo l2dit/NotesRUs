@@ -47,6 +47,44 @@ data:
         # The address the admin API will listen and handle requests on.
         #
         address: ":8001"
+
+    ## database ##
+    #
+    # Configures the backend where to persist data.
+    #
+    database:
+      host: ${DATABASE_HOST}
+      ## port ##
+      #
+      # Default value: 5432
+      #
+      port: ${DATABASE_PORT}
+      ## dialect ##
+      #
+      # Which database will be used.
+      #
+      # One of:
+      # - cockroach
+      # - mariadb
+      # - mysql
+      # - postgres
+      #
+      dialect: DATABASE_DIALECT
+      user: ${DATABASE_USER}
+      password: ${DATABASE_PASSWORD}
+      database: ${DATABASE_DATABASE}
+      ## url ##
+      #
+      # Instead of using the individual fields above this field can be used.
+      # When this field is set, it will be used and the fields above have no effect.
+      #
+      # Url schema: `dialect://username:password@host:port/database`
+      #
+      # Examples:
+      # - postgres://hanko:hanko@localhost:5432/hanko
+      #
+      # url: "
+  
     service:
       ## name ##
       #
@@ -57,7 +95,7 @@ data:
     #
     # Configures secrets used for en-/decrypting JWKs.
     #
-    # secrets:
+    secrets:
       ## keys ##
       #
       # Keys secrets are used to en- and decrypt the JWKs which get used to sign the JWTs.
@@ -71,8 +109,8 @@ data:
       #
       # Each key must be at least 16 characters long.
       #
-      # keys:
-        # - "CHANGE-ME"
+      keys:
+       - ${SECRET_KEYS_0}
     session:
       ## lifespan ##
       #
@@ -191,7 +229,7 @@ data:
         #
         port: "465"
         user: "notesrus.noreply@gmail.com"
-        # password: "CHANGE-ME" Use A Kubernetes Secret
+        password: ${PASSCODE_SMTP_PASSWORD} # Use A Kubernetes Secret
     ## webauthn ##
     #
     # Configures Web Authentication (WebAuthn).
