@@ -72,7 +72,7 @@ spec:
         - name: DATABASE_USER
           valueFrom:
             secretKeyRef:
-              name: postgresql-notes-r-us-app
+              name: postgresql-notes-r-us-superuser
               key: username
 
         - name: DATABASE_PASSWORD
@@ -153,7 +153,7 @@ spec:
             value: "postgres"
 
           - name: DATABASE_DATABASE
-            value: "hanko"
+            value: "app"
 
       volumes:
       - name: hanko-config

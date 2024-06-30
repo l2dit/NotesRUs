@@ -17,7 +17,7 @@ spec:
 
   parameters:
     # Vault role name to use during login
-    roleName: 'app'
+    roleName: 'notesrus'
     # Vault address and TLS connection config is normally best configured by the
     # helm chart, but can be overridden per SecretProviderClass:
     # Vault's hostname
@@ -26,10 +26,10 @@ spec:
     #vaultCACertPath: '/vault/tls/ca.crt'
     objects: |
       - objectName: "email_password"
-        secretPath: "notesrus/hanko"
+        secretPath: "notesrus/data/hanko"
         secretKey: "email_password"
       - objectName: "hanko_secret"
-        secretPath: "notesrus/hanko"
+        secretPath: "notesrus/data/hanko"
         secretKey: "hanko_secret"
     # "objectName" is an alias used within the SecretProviderClass to reference
     # that specific secret. This will also be the filename containing the secret.
