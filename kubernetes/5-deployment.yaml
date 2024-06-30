@@ -196,7 +196,7 @@ spec:
     spec:
       containers:
       - name: notes-r-us
-        image: ghcr.io/l2dit/notesrus:e001fa13a04c13193a29705d2e97693b09bdd1d6
+        image: ghcr.io/l2dit/notesrus:5ae7208be5ce6562716eeac9e42939bbff17813e001fa13a04c13193a29705d2e97693b09bdd1d67
         ports:
         - containerPort: 3000
 
