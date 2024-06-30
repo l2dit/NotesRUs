@@ -69,7 +69,7 @@ data:
       # - mysql
       # - postgres
       #
-      dialect: DATABASE_DIALECT
+      dialect: ${DATABASE_DIALECT}
       user: ${DATABASE_USER}
       password: ${DATABASE_PASSWORD}
       database: ${DATABASE_DATABASE}
@@ -83,7 +83,7 @@ data:
       # Examples:
       # - postgres://hanko:hanko@localhost:5432/hanko
       #
-      # url: "
+      # url: "CHANGE-ME
   
     service:
       ## name ##
