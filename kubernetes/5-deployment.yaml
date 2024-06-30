@@ -106,13 +106,13 @@ spec:
           args:
             - migrate
             - up
-            # - '--config'
-            # - /etc/config/config.yaml
+            - '--config'
+            - /etc/config/config.yaml
 
           volumeMounts:
-          # - name: hanko-config
-          #   mountPath: /etc/config/config.yaml
-          #   subPath: config.yaml
+          - name: hanko-config
+            mountPath: /etc/config/config.yaml
+            subPath: config.yaml
 
           - name: 'notesrus-secret'
             mountPath: '/mnt/secrets-store'
