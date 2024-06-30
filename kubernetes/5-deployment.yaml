@@ -78,7 +78,7 @@ spec:
         - name: DATABASE_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: postgresql-notes-r-us-app
+              name: postgresql-notes-r-us-superuser
               key: password
 
         - name: DATABASE_HOST
@@ -134,13 +134,13 @@ spec:
           - name: DATABASE_USER
             valueFrom:
               secretKeyRef:
-                name: postgresql-notes-r-us-app
+                name: postgresql-notes-r-us-superuser
                 key: username
 
           - name: DATABASE_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: postgresql-notes-r-us-app
+                name: postgresql-notes-r-us-superuser
                 key: password
 
           - name: DATABASE_HOST
