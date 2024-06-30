@@ -38,13 +38,13 @@ spec:
     - match: Host(`auth.notesrus.nzdev.org`)
       kind: Rule
       services:
-        - name: public-service-hanko
+        - name: public-service-hanko-auth
           port: 80
 
     - match: Host(`admin.notesrus.nzdev.org`)
       kind: Rule
       services:
-        - name: admin-service-hanko
+        - name: admin-service-hanko-auth
           port: 80
 
   tls:
