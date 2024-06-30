@@ -18,7 +18,7 @@ async fn main() -> io::Result<()> {
     let args = cli::Args::parse();
 
     let db_url: String = format!(
-        "postgresql://{}:{}@{}:{}/app",
+        "postgresql://{}:{}@{}:{}",
         &args.database_username.unwrap(),
         &args.database_password.unwrap(),
         &args.database_ip.unwrap(),
@@ -27,7 +27,7 @@ async fn main() -> io::Result<()> {
 
     println!("{db_url}");
 
-    let _connection: DatabaseConnection = database::setup::set_up_db(db_url.as_str(), "app")
+    let _connection: DatabaseConnection = database::setup::set_up_db(db_url.as_str(), "notesrus")
         .await
         .expect("Could Not Connect To Data Base");
 

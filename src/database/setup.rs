@@ -24,7 +24,8 @@ pub async fn set_up_db(
                 db.get_database_backend(),
                 format!("CREATE DATABASE \"{}\";", database_name),
             ))
-            .await?;
+            .await
+            .expect("database exsits");
 
             let url = format!("{}/{}", database_url, database_name);
             Database::connect(&url).await?
