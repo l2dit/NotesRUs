@@ -12,8 +12,8 @@ spec:
         createdb: true
         login: true
         comment: hanko database role
-        passwordSecret:
-          name: postgresql-hanko-hanko
+        # passwordSecret:
+        #   name: postgresql-hanko-hanko
 
   enableSuperuserAccess: true
 
