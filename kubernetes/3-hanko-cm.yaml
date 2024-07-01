@@ -33,6 +33,7 @@ data:
             - "https://*.*.nzdev.org"
             - "https://auth.notesrus.nzdev.org"
             - "https://admin.notesrus.nzdev.org"
+            - "http://localhost:5173"
           ## unsafe_wildcard_origin_allowed ##
           #
           # If allow_origins contains a wildcard '*' origin, this flag must explicitly be set to 'true'.
