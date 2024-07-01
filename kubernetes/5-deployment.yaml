@@ -38,6 +38,7 @@ spec:
         - all
         - '--config'
         - /etc/config/config.yaml
+        - 
 
         volumeMounts:
         - name: hanko-config
