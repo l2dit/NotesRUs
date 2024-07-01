@@ -6,6 +6,15 @@ metadata:
 spec:
   instances: 3
 
+  managed:
+    roles:
+      - name: hanko
+        createdb: true
+        login: true
+        comment: hanko database role
+        passwordSecret:
+          name: postgresql-hanko-hanko
+
   enableSuperuserAccess: true
 
   storage:

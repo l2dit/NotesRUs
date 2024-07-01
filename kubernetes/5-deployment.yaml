@@ -72,13 +72,13 @@ spec:
         - name: DATABASE_USER
           valueFrom:
             secretKeyRef:
-              name: postgresql-notes-r-us-app
+              name: postgresql-hanko-hanko
               key: username
 
         - name: DATABASE_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: postgresql-notes-r-us-app
+              name: postgresql-hanko-hanko
               key: password
 
         - name: DATABASE_HOST
@@ -91,7 +91,7 @@ spec:
           value: "postgres"
 
         - name: DATABASE_DATABASE
-          value: "app"
+          value: "hanko"
 
 
 
@@ -134,13 +134,13 @@ spec:
           - name: DATABASE_USER
             valueFrom:
               secretKeyRef:
-                name: postgresql-notes-r-us-app
+                name: postgresql-hanko-hanko
                 key: username
 
           - name: DATABASE_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: postgresql-notes-r-us-app
+                name: postgresql-hanko-hanko
                 key: password
 
           - name: DATABASE_HOST
@@ -153,7 +153,7 @@ spec:
             value: "postgres"
 
           - name: DATABASE_DATABASE
-            value: "app"
+            value: "hanko"
 
       volumes:
       - name: hanko-config
