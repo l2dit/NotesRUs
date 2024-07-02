@@ -232,3 +232,12 @@ spec:
         - name: DATABASE_PORT
           value: "$(POOLER_RW_NOTES_R_US_SERVICE_PORT)"
 
+        volumeMounts:
+          - name: hanko-config
+            mountPath: /etc/config/config.yaml
+            subPath: config.yaml
+ 
+        volumes:
+        - name: hanko-config
+          configMap:
+            name: hanko-config
