@@ -23,20 +23,19 @@ data:
         #
         # Cross Origin Resource Sharing for public endpoints.
         #
-        # cors:
+        cors:
           ## allow_origins ##
           #
           # A list of allowed origins that may access the public endpoints.
           #
-          # allow_origins:
-          #   - "https://notesrus.nzdev.org"
-          #   - "http://localhost:5173/"
+          allow_origins:
+            - "*"
           ## unsafe_wildcard_origin_allowed ##
           #
           # If allow_origins contains a wildcard '*' origin, this flag must explicitly be set to 'true'.
           # Using wildcard '*' origins is insecure and potentially leads to cross-origin attacks.
           #
-          # unsafe_wildcard_origin_allowed: true
+          unsafe_wildcard_origin_allowed: true
       ## admin ##
       #
       # Configuration for the admin API.
