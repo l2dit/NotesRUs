@@ -238,6 +238,6 @@ spec:
             subPath: config.yaml
  
         volumes:
-        - name: hanko-config
-          configMap:
-            name: hanko-config
+          - name: hanko-config
+            configMap:
+              name: hanko-config
