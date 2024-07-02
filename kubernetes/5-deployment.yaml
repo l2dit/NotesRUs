@@ -97,6 +97,54 @@ spec:
 
 
       initContainers:
+        - name: hanko-config
+          image: debian:latest
+          imagePullPolicy: IfNotPresent
+
+          command:
+            - cat
+
+          args:
+            - /etc/config/config.yaml
+
+          volumeMounts:
+          - name: hanko-config
+            mountPath: /etc/config/config.yaml
+            subPath: config.yaml
+
+          - name: 'notesrus-secret'
+            mountPath: '/mnt/secrets-store'
+            readOnly: true
+
+          env:
+          - name: SECRET_KEYS_0
+            value: test
+
+          - name: PASSCODE_SMTP_PASSWORD
+            value: test
+
+          - name: DATABASE_USER
+            valueFrom:
+              secretKeyRef:
+                name: postgresql-notes-r-us-app
+                key: username
+
+          - name: DATABASE_PASSWORD
+            value: wow
+
+          - name: DATABASE_HOST
+            value: "$(POOLER_RW_NOTES_R_US_SERVICE_HOST)"
+
+          - name: DATABASE_PORT
+            value: "$(POOLER_RW_NOTES_R_US_SERVICE_PORT)"
+
+          - name: DATABASE_DIALECT
+            value: "postgres"
+
+          - name: DATABASE_DATABASE
+            value: "app"
+
+
         - name: hanko-migrate
           image: ghcr.io/teamhanko/hanko:main
           imagePullPolicy: IfNotPresent
