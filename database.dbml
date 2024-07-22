@@ -12,12 +12,23 @@ ref: users.id < follow.followed_user_id
 
 Table users {
   id integer [primary key]
-  username varchar [not null]
-  first_name varchar [not null]
-  last_name varchar [not null]
-  role varchar
-  created_at timestamp [not null]
+  username varchar [not null, note: 'username assigned to user.']
+  name varchar [note: 'real name of user optional.']
+  recent_client integer [note: 'the last client to be used by the user']
+  role integer [not null, default: 0, note: 'weather the user has administrative permisions']
+  created_at timestamp [not null, note: 'user creation timestamp']
 }
+
+Ref: users.recent_client - clients.id
+
+Table clients {
+  id integer [not null, primary key, note: 'index not used by user']
+  user_id integer [not null, note: 'client owner']
+  identifier varchar [not null, note: 'hashed unique client identifier']
+  secret varchar [not null, note: 'client secret']
+}
+
+Ref: clients.user_id > users.id
 
 Table posts {
   id integer [primary key]
@@ -26,7 +37,8 @@ Table posts {
   down_votes integer [not null]
   title varchar [not null]
   body text [note: 'Content of the post', not null]
-  created_at timestamp [not null]
+  created_at timestamp [not null, note: 'timestamp of posting']
+  edited_at timestamp [note: 'can be nulled if has not been edited']
 }
 
 Ref: posts.user_id > users.id
@@ -36,21 +48,11 @@ Table comments {
   user_id integer [not null]
   post_id integer [not null]
   reply_coment_id integer [note: 'can be null if not a reply']
-  body text [note: 'post content', not null]
-  created_at timestamp [not null]
+  body text [not null, note: 'comment content']
+  created_at timestamp [not null, note:'timespamp of posting']
   edited_at timestamp [note: 'can be null if not been edited']
 }
 
 Ref: comments.user_id > users.id
 Ref: comments.id < comments.reply_coment_id
 Ref: posts.id < comments.post_id
-
-TableGroup user {
-  users
-  follow
-}
-
-TableGroup post {
-  posts
-  comments
-}
