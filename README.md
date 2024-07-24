@@ -3,6 +3,8 @@
 
 Notes Aplication
 
+The database schema if your intrested is [here](https://dbdocs.io/21ltietjens/Notes-R-Us).
+
 # What You Need
 1. Built [The Front End](./notes_r_us_ui) to ./notes_r_us_ui/dist/.
 2. Rust
