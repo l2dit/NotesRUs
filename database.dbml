@@ -21,6 +21,7 @@ Table users {
 
 Ref: users.recent_client - clients.id
 
+
 Table clients {
   id integer [not null, primary key, note: 'index not used by user']
   user_id integer [not null, note: 'client owner']
