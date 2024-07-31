@@ -2,11 +2,14 @@ use sea_orm_migration::prelude::*;
 
 use crate::m20220101_000001_users_table::Users;
 
+/// Migration Definition
 #[derive(DeriveMigrationName)]
 pub struct Migration;
 
+/// Migration Implementation
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
+    /// Post Table Migration Up
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
             .create_table(
@@ -42,6 +45,7 @@ impl MigrationTrait for Migration {
             .await
     }
 
+    /// Post Table Migration Down
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
             .drop_table(Table::drop().table(Posts::Table).to_owned())
@@ -49,15 +53,24 @@ impl MigrationTrait for Migration {
     }
 }
 
+/// Posts Table
 #[derive(DeriveIden)]
 pub enum Posts {
     Table,
+    /// Identifyer For The Post
     Id,
+    /// The User Creating The Post
     UserId,
+    /// Up Votes Same Idea As Likes
     UpVotes,
+    /// Down Votes Same Idea As Dislikes
     DownVotes,
+    /// Title Of The Post
     Title,
+    /// Post Body Field
     Body,
+    /// Inital Creation Timestamp
     CreationTime,
+    /// The Last Timestamp Of A Edit
     EditTime,
 }

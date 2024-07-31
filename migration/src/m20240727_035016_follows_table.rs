@@ -2,11 +2,14 @@ use sea_orm_migration::prelude::*;
 
 use crate::m20220101_000001_users_table::Users;
 
+/// Migration Definition
 #[derive(DeriveMigrationName)]
 pub struct Migration;
 
+/// Migration Implmentation
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
+    /// Follow Table Migration Up
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
             .create_table(
@@ -48,6 +51,7 @@ impl MigrationTrait for Migration {
             .await
     }
 
+    /// Follow Table Migration Down
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
             .drop_table(Table::drop().table(Follows::Table).to_owned())
@@ -55,11 +59,16 @@ impl MigrationTrait for Migration {
     }
 }
 
+/// Folows Table
 #[derive(DeriveIden)]
 enum Follows {
     Table,
+    /// Internal Follow Relationship Refrance
     Id,
+    /// User Id Of The Person Following
     FollowingUserId,
+    /// User Id Of the Person Being Followed
     FollowedUserId,
+    /// The Timestamp Of The Creation Of The Follow
     CreationTime,
 }

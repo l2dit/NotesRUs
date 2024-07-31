@@ -2,11 +2,15 @@ use sea_orm_migration::{prelude::*, sea_orm::DbBackend};
 
 use crate::m20240726_065639_clients_table::Clients;
 
+/// Migration Defition
 #[derive(DeriveMigrationName)]
 pub struct Migration;
 
+/// Migration Implementation
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
+    /// User Table Migration Up
+    /// This table is special as it refrances a table that dosent exist sqlite likes it to make foregin key here. However postgres doesn't this is why theres a foreign key migration that runs last.
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         if manager.get_database_backend() == DbBackend::Sqlite {
             return manager
@@ -67,6 +71,7 @@ impl MigrationTrait for Migration {
         }
     }
 
+    /// User Table Migration Down
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
             .drop_table(Table::drop().table(Users::Table).to_owned())

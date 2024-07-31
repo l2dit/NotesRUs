@@ -2,11 +2,14 @@ use sea_orm_migration::prelude::*;
 
 use crate::{m20220101_000001_users_table::Users, m20240727_061854_posts_table::Posts};
 
+/// Migration Defintion
 #[derive(DeriveMigrationName)]
 pub struct Migration;
 
+/// Migration Implementation
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
+    /// Comment Table Migration Up
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
             .create_table(
@@ -57,6 +60,7 @@ impl MigrationTrait for Migration {
             .await
     }
 
+    /// Comment Table Migration Down
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
             .drop_table(Table::drop().table(Comments::Table).to_owned())
@@ -64,14 +68,22 @@ impl MigrationTrait for Migration {
     }
 }
 
+/// Comments Table
 #[derive(DeriveIden)]
 enum Comments {
     Table,
+    /// Comment Identifier
     Id,
+    /// User That Created The Comment
     UserId,
+    /// The Post The Comment Is Mentioning
     PostId,
+    /// If Comment Is In Response To Another Comment The Id Of That Comment
     ReplyCommentId,
+    /// Body Of The Comment
     Body,
+    /// Timestamp Of The Intial Creation Of The Comment
     CreationTime,
+    /// If Edited The Timestamp Of The Last Edit
     EditTime,
 }
