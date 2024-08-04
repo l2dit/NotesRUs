@@ -5,9 +5,12 @@ use poem::{
     EndpointExt, Route, Server,
 };
 use poem_openapi::OpenApiService;
+use sea_orm::Database;
 use std::{env, io};
 use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
+
+use migration::{self, Migrator, MigratorTrait};
 
 /// Simple program to greet a person
 #[derive(Parser, Debug)]
@@ -29,21 +32,9 @@ struct Args {
     #[arg(long, env, default_value_t = false)]
     https: bool,
 
-    /// Postgresql Username
-    #[arg(long, env)]
-    postgresql_username: Option<String>,
-
-    /// Postgresql Password
-    #[arg(long, env)]
-    postgresql_password: Option<String>,
-
-    /// Postgresql Connection IP
-    #[arg(long, env)]
-    postgresql_ip: Option<String>,
-
-    /// Postgresql Connection Port
-    #[arg(long, env)]
-    postgresql_port: Option<u16>,
+    /// Database Url (Postgres, Sqlite)
+    #[arg(long, env, default_value_t = String::from("sqlite://./database.sqlite"))]
+    database_url: String,
 }
 
 /// Create The Server String
@@ -66,6 +57,12 @@ fn server_constructor(
 async fn main() -> io::Result<()> {
     // Parse the Args
     let args = Args::parse();
+
+    // Database Connection
+    let database = Database::connect(&args.database_url).await.unwrap();
+
+    // Migration run
+    Migrator::up(&database, None).await;
 
     // Set up tracing subscriber for logging
     let subscriber = FmtSubscriber::builder()
