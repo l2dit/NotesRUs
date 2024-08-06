@@ -1,10 +1,14 @@
-use notes_r_us::backend;
+use chrono::Local;
+use notes_r_us::{
+    backend,
+    entity::{prelude::*, users},
+};
 use poem::{
     endpoint::StaticFilesEndpoint, listener::TcpListener, middleware::Cors, middleware::Tracing,
     EndpointExt, Route, Server,
 };
 use poem_openapi::OpenApiService;
-use sea_orm::Database;
+use sea_orm::{ActiveValue, Database, EntityTrait};
 use std::{env, io};
 use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
@@ -23,6 +27,21 @@ async fn main() -> io::Result<()> {
 
     // Migration run
     let _ = Migrator::up(&database, None).await;
+
+    // \\\\\\\\\\\DEMO-CODE\\\\\\\\\\
+    let user = users::ActiveModel {
+        username: ActiveValue::set("notliam_99".into()),
+        name: ActiveValue::set("Liam T".into()),
+        most_recent_client: ActiveValue::not_set(),
+        role: ActiveValue::not_set(),
+        creation_time: ActiveValue::set(Local::now().into()),
+        ..Default::default()
+    };
+
+    let user = Users::insert(user).exec(&database).await;
+
+    println!("{user:?}");
+    // \\\\\\\\\\DEMO-CODE\\\\\\\\\
 
     // Set up tracing subscriber for logging
     let subscriber = FmtSubscriber::builder()
