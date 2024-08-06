@@ -12,11 +12,13 @@ The database schema if your intrested is [here](https://dbdocs.io/21ltietjens/No
 # Build/Run
 
 ```zsh
-cargo build // builds to the target directory `./target/debug/notes_r_us`
+# Must have a database to connect to Default: (./database.sqlite)
 
-cargo run // Runs The Application On `0.0.0.0:3000`
+cargo build # builds to the target directory `./target/debug/notes_r_us`
 
-./target/debug/notes_r_us // Runs The Application On `0.0.0.0:3000`
+cargo run # Runs The Application On `0.0.0.0:3000`
+
+./target/debug/notes_r_us # Runs The Application On `0.0.0.0:3000`
 ```
 # Deployment
 ## Docker
