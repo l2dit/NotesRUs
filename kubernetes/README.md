@@ -9,8 +9,5 @@ DOMAIN="notesrus.nzdev.org"
 HTTPS="true"
 
 # Database Enviroment Vars
-DATABASE_USERNAME=<username_secret>
-DATABASE_PASSWORD=<password_secret>
-DATABASE_IP=<postgresql_ip_address>
-DATABASE_PORT=<posgresql_port>
+DATABASE_URL=<posgresql_uri>
 ```
