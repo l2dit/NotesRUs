@@ -29,18 +29,18 @@ async fn main() -> io::Result<()> {
     let _ = Migrator::up(&database, None).await;
 
     // \\\\\\\\\\\DEMO-CODE\\\\\\\\\\
-    let user = users::ActiveModel {
-        username: ActiveValue::set("notliam_99".into()),
-        name: ActiveValue::set("Liam T".into()),
-        most_recent_client: ActiveValue::not_set(),
-        role: ActiveValue::not_set(),
-        creation_time: ActiveValue::set(Local::now().into()),
-        ..Default::default()
-    };
+    // let user = users::ActiveModel {
+    //     username: ActiveValue::set("notliam_99".into()),
+    //     name: ActiveValue::set("Liam T".into()),
+    //     most_recent_client: ActiveValue::not_set(),
+    //     role: ActiveValue::not_set(),
+    //     creation_time: ActiveValue::set(Local::now().into()),
+    //     ..Default::default()
+    // };
 
-    let user = Users::insert(user).exec(&database).await;
+    // let user = Users::insert(user).exec(&database).await;
 
-    println!("{user:?}");
+    // println!("{user:?}");
     // \\\\\\\\\\DEMO-CODE\\\\\\\\\
 
     // Set up tracing subscriber for logging
