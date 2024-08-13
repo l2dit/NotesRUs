@@ -6,9 +6,9 @@ use sea_orm::entity::prelude::*;
 #[sea_orm(table_name = "clients")]
 pub struct Model {
     #[sea_orm(primary_key)]
-    pub id: i32,
-    pub user_id: i32,
-    pub client_identifier: String,
+    pub id: String,
+    pub user_id: String,
+    pub client_identifier: i32,
     pub client_secret: String,
 }
 

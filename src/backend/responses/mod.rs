@@ -41,3 +41,10 @@ pub enum Redirect {
     #[oai(status = 302)]
     Response(#[oai(header = "Location")] String),
 }
+
+#[derive(poem_openapi::ApiResponse)]
+pub enum AuthSession {
+    #[oai(status = 200)]
+    Response(PlainText<String>, #[oai(header = "Set-Cookie")] String),
+}
+

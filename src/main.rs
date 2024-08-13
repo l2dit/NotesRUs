@@ -1,8 +1,4 @@
 use chrono::Local;
-use notes_r_us::{
-    backend,
-    entity::{prelude::*, users},
-};
 use poem::{
     endpoint::StaticFilesEndpoint, listener::TcpListener, middleware::Cors, middleware::Tracing,
     EndpointExt, Route, Server,
@@ -15,7 +11,9 @@ use tracing_subscriber::FmtSubscriber;
 
 use migration::{self, Migrator, MigratorTrait};
 
-mod cli;
+pub mod backend;
+pub mod entity;
+pub mod cli;
 
 #[tokio::main]
 async fn main() -> io::Result<()> {
@@ -81,10 +79,7 @@ async fn main() -> io::Result<()> {
     // Create the API service
     let api_service = OpenApiService::new(
         backend::Api {
-            status: tokio::sync::Mutex::new(backend::Status {
-                id: 1,
-                files: Default::default(),
-            }),
+            database: database
         },
         "Notes R Us API Documentation",
         env!("CARGO_PKG_VERSION"),

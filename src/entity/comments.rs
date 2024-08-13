@@ -6,10 +6,10 @@ use sea_orm::entity::prelude::*;
 #[sea_orm(table_name = "comments")]
 pub struct Model {
     #[sea_orm(primary_key)]
-    pub id: i32,
-    pub user_id: i32,
-    pub post_id: i32,
-    pub reply_comment_id: i32,
+    pub id: String,
+    pub user_id: String,
+    pub post_id: String,
+    pub reply_comment_id: String,
     #[sea_orm(column_type = "Text")]
     pub body: String,
     pub creation_time: DateTimeWithTimeZone,

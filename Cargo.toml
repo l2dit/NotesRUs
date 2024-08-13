@@ -24,6 +24,14 @@ features = [
 	"tempfile"
 ]
 
+[dependencies.uuid]
+version = "1.10.0"
+features = [
+    "v4",              
+    "fast-rng",          
+    "macro-diagnostics", 
+]
+
 [dependencies.poem-openapi]
 version = "5.0.2"
 features = [
