@@ -6,6 +6,7 @@ mod m20240727_035016_follows_table;
 mod m20240727_061854_posts_table;
 mod m20240727_063114_comments_table;
 mod m20240729_222557_foreign_keys;
+mod m20240816_001629_otp_codes_table;
 
 pub struct Migrator;
 
@@ -19,6 +20,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20240727_061854_posts_table::Migration),
             Box::new(m20240727_063114_comments_table::Migration),
             Box::new(m20240729_222557_foreign_keys::Migration),
+            Box::new(m20240816_001629_otp_codes_table::Migration),
         ]
     }
 }
