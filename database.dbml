@@ -2,8 +2,9 @@
 // Docs: https://dbml.dbdiagram.io/docs
 
 Table follow {
-  following_user_id integer [not null]
-  followed_user_id integer [not null]
+  id integer [primary key, not null]
+  following_user_id integer [not null, note: The user sending the follow]
+  followed_user_id integer [not null, note: The user reciving the follow]
   created_at timestamp [not null]
 }
 
@@ -57,3 +58,12 @@ Table comments {
 Ref: comments.user_id > users.id
 Ref: comments.id < comments.reply_coment_id
 Ref: posts.id < comments.post_id
+
+Table one_time_codes {
+  id integer [primary key]
+  user_id integer [not null, note: the user that the code is atached too]
+  code varchar [not null, note: otp code to be used to authenticate new clients]
+  expiry_date timestamp [note: optional time stamp if its a recovery code this field will be absent]
+}
+
+Ref: one_time_codes.user_id > users.id
