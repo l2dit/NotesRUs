@@ -13,7 +13,7 @@ use std::{env, io};
 use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
 
-use migration::{self, Migrator, MigratorTrait};
+use notes_r_us_migration::{self, Migrator, MigratorTrait};
 
 mod cli;
 

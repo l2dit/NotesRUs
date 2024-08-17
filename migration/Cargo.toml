@@ -1,12 +1,18 @@
 [package]
-name = "migration"
+name = "notes_r_us_migration"
 version = "0.1.0"
 edition = "2021"
 readme = "README.md"
 description = "Database Migrations For Notesrus"
+repository.workspace = true
+homepage.workspace = true
+documentation.workspace = true
+license-file.workspace = true
+keywords.workspace = true
+authors.workspace = true
 
 [lib]
-name = "migration"
+name = "notes_r_us_migration"
 path = "src/lib.rs"
 
 [dependencies]

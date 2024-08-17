@@ -61,7 +61,7 @@ impl MigrationTrait for Migration {
 
 /// Folows Table
 #[derive(DeriveIden)]
-enum Follows {
+pub enum Follows {
     Table,
     /// Internal Follow Relationship Refrance
     Id,
