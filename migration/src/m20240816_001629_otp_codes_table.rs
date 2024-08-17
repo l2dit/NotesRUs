@@ -2,11 +2,14 @@ use sea_orm_migration::prelude::*;
 
 use crate::m20220101_000001_users_table::Users;
 
+/// Migration Defition
 #[derive(DeriveMigrationName)]
 pub struct Migration;
 
+/// Migration Implementation
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
+    /// OtpCodes Table Migration Up
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
             .create_table(
@@ -34,6 +37,7 @@ impl MigrationTrait for Migration {
             .await
     }
 
+    /// OtpCodes Table Migration Down
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
             .drop_table(Table::drop().table(OtpCodes::Table).to_owned())
@@ -41,11 +45,21 @@ impl MigrationTrait for Migration {
     }
 }
 
+/// OtpCodes Table
+/// Holds Codes Used For User Re-Authentication There Are Two Types:
+/// - Short Term Codes
+///     These Have Specifyed Expirys
+/// - Recovery Codes
+///     These Do Not Have Expirys
 #[derive(DeriveIden)]
 enum OtpCodes {
     Table,
+    /// Internal Index Of Codes
     Id,
+    /// The User The Code Authenticates
     UserId,
+    /// The Code It Self
     Code,
+    /// The Time & Date Of Expiry
     ExpiryDate,
 }
