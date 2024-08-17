@@ -70,7 +70,7 @@ impl MigrationTrait for Migration {
 
 /// Comments Table
 #[derive(DeriveIden)]
-enum Comments {
+pub enum Comments {
     Table,
     /// Comment Identifier
     Id,

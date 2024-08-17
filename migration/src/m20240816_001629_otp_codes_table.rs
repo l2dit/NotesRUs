@@ -52,7 +52,7 @@ impl MigrationTrait for Migration {
 /// - Recovery Codes
 ///     These Do Not Have Expirys
 #[derive(DeriveIden)]
-enum OtpCodes {
+pub enum OtpCodes {
     Table,
     /// Internal Index Of Codes
     Id,

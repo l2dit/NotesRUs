@@ -29,7 +29,7 @@ pub struct Args {
 ///
 /// # Arguments
 /// * `args` - Takes a allready parsed `cli::Args`
-/// * `suffix - If you want a suffix e.g. `<url>/index.html`
+/// * `suffix - If you want a suffix e.g. `\<url\>/index.html`
 /// * `http_prefix` - Allow you to add a (`http://` or `https://`) prefix depends on cli args
 pub fn server_url(args: &Args, suffix: Option<String>, http_prefix: bool) -> String {
     let https: String = match args.https {
