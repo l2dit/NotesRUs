@@ -26,6 +26,8 @@ pub enum Relation {
     Clients,
     #[sea_orm(has_many = "super::comments::Entity")]
     Comments,
+    #[sea_orm(has_many = "super::otp_codes::Entity")]
+    OtpCodes,
     #[sea_orm(has_many = "super::posts::Entity")]
     Posts,
 }
@@ -39,6 +41,12 @@ impl Related<super::clients::Entity> for Entity {
 impl Related<super::comments::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Comments.def()
+    }
+}
+
+impl Related<super::otp_codes::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::OtpCodes.def()
     }
 }
 
