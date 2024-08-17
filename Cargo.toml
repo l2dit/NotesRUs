@@ -2,6 +2,13 @@
 name = "notes_r_us"
 version = "0.3.0"
 edition = "2021"
+readme = "README.md"
+homepage = "https://notesrus.nzdev.org"
+authors = ["Liam Tietjens <liam@nzdev.org>", "Zac S (Ellozac) <zlsy108@gmail.com>", "Yuri P (yPiuro)"]
+repository = "https://github.com/l2dit/notesrus.git"
+license-file = "LICENSE"
+keywords = ["Api", "Notes", "Database"]
+
 
 [workspace]
 members = [".", "migration"]
@@ -14,7 +21,7 @@ tracing = "0.1.4"
 serde_json = "1.0.117"
 chrono = "0.4.38"
 chrono-tz = "0.9.0"
-migration = { path = "migration" }
+migration = { path = "migration", version = "^0.1.0"}
 
 [dependencies.poem]
 version = "3.0.1"
