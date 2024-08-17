@@ -20,7 +20,7 @@ impl MigrationTrait for Migration {
                             .auto_increment()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(OtpCodes::UserId).char().not_null())
+                    .col(ColumnDef::new(OtpCodes::UserId).integer().not_null())
                     .col(ColumnDef::new(OtpCodes::Code).char().not_null())
                     .col(ColumnDef::new(OtpCodes::ExpiryDate).timestamp_with_time_zone())
                     .foreign_key(
