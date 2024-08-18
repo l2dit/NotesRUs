@@ -1,5 +1,5 @@
 [package]
-name = "notes_r_us_migration"
+name = "notes_r_us_migrations"
 version = "0.1.0"
 edition = "2021"
 readme = "README.md"
@@ -12,7 +12,7 @@ keywords.workspace = true
 authors.workspace = true
 
 [lib]
-name = "notes_r_us_migration"
+name = "notes_r_us_migrations"
 path = "src/lib.rs"
 
 [dependencies]
