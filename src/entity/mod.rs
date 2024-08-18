@@ -5,5 +5,6 @@ pub mod prelude;
 pub mod clients;
 pub mod comments;
 pub mod follows;
+pub mod otp_codes;
 pub mod posts;
 pub mod users;

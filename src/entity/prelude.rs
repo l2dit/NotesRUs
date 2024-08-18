@@ -3,5 +3,6 @@
 pub use super::clients::Entity as Clients;
 pub use super::comments::Entity as Comments;
 pub use super::follows::Entity as Follows;
+pub use super::otp_codes::Entity as OtpCodes;
 pub use super::posts::Entity as Posts;
 pub use super::users::Entity as Users;

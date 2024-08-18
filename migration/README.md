@@ -1,4 +1,7 @@
-# Running Migrator CLI
+# Migrations
+This is migrations create for notes r us application that defines the shema.
+
+## Running Migrator CLI
 
 - Generate a new migration file
     ```sh
