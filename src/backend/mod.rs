@@ -4,17 +4,14 @@ use chrono::Local;
 use poem_openapi::{
     param::Path,
     param::Query,
-    payload::{Attachment, AttachmentType, Json, PlainText},
-    types::ToJSON,
+    payload::{Json, PlainText},
     OpenApi,
 };
-use poem::Request;
-use sea_orm::{ActiveModelTrait, EntityTrait, InsertResult, TryIntoModel};
-use uuid::Uuid;
+use sea_orm::ActiveModelTrait;
 use serde_json;
 #[path = "responses/mod.rs"]
 pub mod responses;
-use crate::{entity::prelude::*, entity::users};
+use crate::entity::users;
 
 #[derive(poem_openapi::Tags)]
 enum ApiTags {
@@ -42,7 +39,7 @@ impl Api {
     }
 
     #[oai(path = "/auth/user/register", method = "get", tag = ApiTags::API)]
-    async fn create_user(&self,name: Query<Option<String>>, ) -> PlainText<String> {
+    async fn create_user(&self,name: Query<Option<String>>, ) -> responses::UserRegister {
         let mut user: users::ActiveModel = users::ActiveModel {
             username: sea_orm::ActiveValue::set("zachlicious".into()),
             name: sea_orm::ActiveValue::not_set(),
@@ -61,22 +58,23 @@ impl Api {
 
         let user: Result<users::Model, sea_orm::DbErr> = user.insert(&self.database).await;
 
-        if user.is_err() {
-            let error = user.unwrap_err();
-            println!("ERROR: {error:?}");
-            PlainText(format!("{error:?}"))
-        }
-        else {
-            let user: users::Model = user.unwrap();
-            println!("{user:?}");
-            PlainText(format!("{user:?}"))
+        match user {
+            Err(user) => {
+                println!("ERROR: {user:?}");
+                responses::UserRegister::Error(PlainText(format!("DATABASE ERROR: {user:?}")))
+            },
+            Ok(user) => {
+                let user: users::Model = user;
+                println!("{user:?}");
+                responses::UserRegister::Response(Json(serde_json::to_value(&user).unwrap()))
+            }
         }
     }
 
     #[oai(path = "/auth/session:c_id:user_id:c_sec", method = "get", tag = ApiTags::API)]
     async fn get_token(&self, c_id: Path<String>, user_id: Path<String>, unsf_c_sec: Path<String>) -> responses::AuthSession {
-        let c_id: String = c_id.to_string();
-        let user_id: String = user_id.to_string();
+        let _c_id: String = c_id.to_string();
+        let _user_id: String = user_id.to_string();
         let safe_c_sec: String = unsf_c_sec.to_string(); // unsf = unhashed, safe = hashed and/or salted
         responses::AuthSession::Response(PlainText(format!("Bearer: {safe_c_sec}").to_string()), safe_c_sec.to_string())
 

@@ -3,6 +3,8 @@ use poem_openapi::{
     types::multipart::Upload,
     ApiResponse, Multipart,
 };
+use serde_json;
+
 
 #[derive(Debug, ApiResponse)]
 pub enum GetFileResponse {
@@ -40,6 +42,16 @@ pub struct UploadPayload {
 pub enum Redirect {
     #[oai(status = 302)]
     Response(#[oai(header = "Location")] String),
+}
+#[derive(poem_openapi::ApiResponse)]
+
+pub enum UserRegister {
+    #[oai(status = 200)]
+    Response(Json<serde_json::Value>),
+
+    #[oai(status = 500)]
+    Error(PlainText<String>)
+
 }
 
 #[derive(poem_openapi::ApiResponse)]
