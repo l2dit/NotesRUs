@@ -3,7 +3,7 @@
     <form>
       <label id="button-label">Upload markdown.</label>
       <br />
-      <label id="file-input-button" for="file-input" class="introduction">Upload</label>
+      <label id="file-input-button" for="file-input">Upload</label>
       <input id="file-input" type="file" @change="handle_file_change" accept=".md, .markdown" />
     </form>
     <p id="error-message" class="error-message-hide">{{ error_msg }}</p>
