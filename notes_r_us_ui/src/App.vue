@@ -1,21 +1,23 @@
 <template>
   <Sidebar />
   <router-view />
+  <IntroTour />
 </template>
 
 <script>
+import IntroTour from './components/introTour.vue'
 import Sidebar from './components/Sidebar.vue';
 export default {
   components: {
     Sidebar,
-  }
+    IntroTour,
+  },
 };
 </script>
 
 <style>
 #app>body {
   background-color: #F4F5FA;
-
 }
 
 div {

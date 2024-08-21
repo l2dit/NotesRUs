@@ -16,7 +16,7 @@
 import axios from "axios";
 import DOMPurify from "dompurify";
 import { marked } from "marked";
-let get_route = process.env.NODE_ENV == "production" ? `${window.location.origin}/api` : `http://127.0.0.1:3000/api`;;
+let get_route = process.env.NODE_ENV == "production" ? `${window.location.origin}/api` : `http://127.0.0.1:3000/api`;
 
 
 function retrieve_files() {

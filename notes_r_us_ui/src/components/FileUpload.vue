@@ -3,7 +3,7 @@
     <form>
       <label id="button-label">Upload markdown.</label>
       <br />
-      <label id="file-input-button" for="file-input">Upload</label>
+      <label id="file-input-button" for="file-input" class="introduction">Upload</label>
       <input id="file-input" type="file" @change="handle_file_change" accept=".md, .markdown" />
     </form>
     <p id="error-message" class="error-message-hide">{{ error_msg }}</p>
@@ -13,7 +13,7 @@
 <script>
 import axios from 'axios';
 
-let post_route = process.env.NODE_ENV == "production" ? `${window.location.origin}/api` : `http://127.0.0.1:3000/api`;;
+let post_route = process.env.NODE_ENV == "production" ? `${window.location.origin}/api` : `http://127.0.0.1:3000/api`;
 
 
 export default {
@@ -95,13 +95,13 @@ export default {
 }
 
 #file-input-button {
-  transition:all 0.3s ease-in-out;
-  border:1px solid rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease-in-out;
+  border: 1px solid rgba(0, 0, 0, 0.3);
   color: rgba(0, 0, 0, 0.7);
-  display:inline-block;
-  padding:6px 12px;
-  cursor:pointer;
-  margin-top:10px;
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
+  margin-top: 10px;
   border-radius: 8px;
   border-width: 3px;
 }
@@ -110,7 +110,7 @@ export default {
   border: 1px solid black;
   border-width: 3px;
   color: black;
-  box-shadow: 0 0 11px rgba(33,33,33,.2);
+  box-shadow: 0 0 11px rgba(33, 33, 33, .2);
 }
 
 #button-label {
