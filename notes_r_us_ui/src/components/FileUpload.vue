@@ -3,7 +3,7 @@
     <form>
       <label id="button-label">Upload markdown.</label>
       <br />
-      <label id="file-input-button" for="file-input">Upload</label>
+      <label id="file-input-button" for="file-input" ref="upload_ref">Upload</label>
       <input id="file-input" type="file" @change="handle_file_change" accept=".md, .markdown" />
     </form>
     <p id="error-message" class="error-message-hide">{{ error_msg }}</p>
@@ -12,7 +12,6 @@
 
 <script>
 import axios from 'axios';
-
 let post_route = process.env.NODE_ENV == "production" ? `${window.location.origin}/api` : `http://127.0.0.1:3000/api`;
 
 

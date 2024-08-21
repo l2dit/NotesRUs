@@ -20,10 +20,10 @@ export default {
             intro: "Welcome to NotesRus 🗒️",
           },
           {
-            element: document.querySelector('#app > .center-content'),
+            element: document.querySelector('#app'),
             title: "Notesrus",
             intro: "You can upload your <a href='https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.markdownguide.org/&ved=2ahUKEwju582U_4aIAxU51jgGHR9FJLAQFnoECAYQAQ&usg=AOvVaw1fohdJEEbL6kohiJ-Pimbe'>.md<a/> files here",
-            position: "Right",
+            position: "Top",
           },
           {
             element: document.querySelector('#app > nav:nth-child(1)'),
