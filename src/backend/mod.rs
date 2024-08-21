@@ -1,5 +1,5 @@
 use std::fmt::Debug;
-
+use std::option::Option;
 use chrono::Local;
 use poem_openapi::{
     param::Path,
@@ -41,8 +41,8 @@ impl Api {
         responses::Redirect::Response("/api/docs".to_string())
     }
 
-    #[oai(path = "/auth/user/register", method = "post", tag = ApiTags::API)]
-    async fn create_user(&self,name: Option<String>, ) -> PlainText<String> {
+    #[oai(path = "/auth/user/register", method = "get", tag = ApiTags::API)]
+    async fn create_user(&self,name: Query<Option<String>>, ) -> PlainText<String> {
         let mut user: users::ActiveModel = users::ActiveModel {
             username: sea_orm::ActiveValue::set("zachlicious".into()),
             name: sea_orm::ActiveValue::not_set(),
@@ -52,8 +52,8 @@ impl Api {
             ..Default::default()
         };
 
-        if !name.is_empty() {
-            user.set(users::Column::Name, sea_orm::Value::from(name.as_str()))
+        if !name.is_none() {
+            user.set(users::Column::Name, sea_orm::Value::from(name.clone().unwrap()))
         };
 
         let user: users::Model = user.insert(&self.database).await.unwrap();

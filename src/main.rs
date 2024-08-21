@@ -48,6 +48,8 @@ async fn main() -> io::Result<()> {
             cli::server_url(&args, None, true).as_str(),
             "http://localhost:5173",
             "http://localhost:*",
+            "https://localhost:*",
+            "https://localhost:3000",
         ])
         .allow_methods(vec!["GET", "POST", "PUT", "DELETE", "OPTIONS"])
         .allow_headers(vec![

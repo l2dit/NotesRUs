@@ -40,7 +40,7 @@ pub fn server_url(args: &Args, suffix: Option<String>, http_prefix: bool) -> Str
     match http_prefix {
         true => {
             return format!(
-                "{https}://{}{}{}",
+                "{https}://{}:{}{}",
                 args.domain,
                 args.port,
                 suffix.unwrap_or(String::new())
