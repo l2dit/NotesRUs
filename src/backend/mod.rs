@@ -1,7 +1,6 @@
 use std::fmt::Debug;
 
-use chrono::{TimeZone, Utc};
-use chrono_tz::Pacific::Auckland;
+use chrono::Local;
 use poem_openapi::{
     param::Path,
     payload::{Attachment, AttachmentType, Json, PlainText},
@@ -9,14 +8,12 @@ use poem_openapi::{
     OpenApi,
 };
 use poem::Request;
-use sea_orm::EntityTrait;
+use sea_orm::{ActiveModelTrait, EntityTrait, InsertResult, TryIntoModel};
 use uuid::Uuid;
 use serde_json;
 #[path = "responses/mod.rs"]
 pub mod responses;
-use crate::cli;
-
-use super::{entity::prelude, entity::posts};
+use crate::{entity::prelude::*, entity::users};
 
 #[derive(poem_openapi::Tags)]
 enum ApiTags {
@@ -43,42 +40,67 @@ impl Api {
         responses::Redirect::Response("/api/docs".to_string())
     }
 
+    #[oai(path = "/auth/register", method = "get", tag = ApiTags::API)]
+    async fn create_user(&self, name: Option<String>, ) -> PlainText<String> {
+        let mut user: users::ActiveModel = users::ActiveModel {
+            username: sea_orm::ActiveValue::set("notliam_99".into()),
+            name: sea_orm::ActiveValue::not_set(),
+            most_recent_client: sea_orm::ActiveValue::not_set(),
+            role: sea_orm::ActiveValue::not_set(),
+            creation_time: sea_orm::ActiveValue::set(Local::now().into()),
+            ..Default::default()
+        };
+        
+        match name {
+            Some(name) => user.set(users::Column::Name, name.into()),
+            _ => ()
+        }
+
+        let user: users::Model = user.insert(&self.database).await.unwrap();
+        println!("{user:?}");
+        PlainText(format!("{user:?}"))
+    }
+
     #[oai(path = "/auth/session:c_id:user_id:c_sec", method = "get", tag = ApiTags::API)]
-    async fn get_cookie(&self, c_id: Path<String>, user_id: Path<String>, unsf_c_sec: Path<String>) -> responses::AuthSession {
+    async fn get_token(&self, c_id: Path<String>, user_id: Path<String>, unsf_c_sec: Path<String>) -> responses::AuthSession {
         let c_id: String = c_id.to_string();
         let user_id: String = user_id.to_string();
         let safe_c_sec: String = unsf_c_sec.to_string(); // unsf = unhashed, safe = hashed and/or salted
-        responses::AuthSession::Response(PlainText(format!("Client/Device ID: {c_id}\nUsr ID: {user_id}\nHashed Secret: {safe_c_sec}").to_string()), safe_c_sec.to_string())
+        responses::AuthSession::Response(PlainText(format!("Bearer: {safe_c_sec}").to_string()), safe_c_sec.to_string())
+
+        //TODO - Implement actual AUTH/Cookie
+        // 1. Hash and (maybe) salt client secret
+        // 2. Cross-Reference client data with server data (owner user id, client secret and client id)
+        // 3. Return status 200 + cookie with hashed and salted client_secret on sucessful request
+
+
+
     }
 
-    /// Upload file
-    #[oai(path = "/db-test/posts/new/:title", method = "post", tag = ApiTags::API)]
-    async fn upload_file(&self, upload: responses::UploadPayload, post_title: Path<String>) -> poem::Result<Json<String>> {
+    // #[oai(path = "/db-test/posts/new/:title", method = "post", tag = ApiTags::API)]
+    // async fn upload_file(&self, upload: responses::UploadPayload, post_title: Path<String>,) -> poem::Result<Json<String>> {
 
-        let id = uuid::Uuid::new_v4();
-        let time_post_upload =
-    Auckland.from_utc_datetime(&Utc::now().naive_utc());
-        let post = posts::ActiveModel {
-            id: sea_orm::ActiveValue::set(id.clone().to_string()),
-            title: sea_orm::ActiveValue::set(post_title.to_string()),
-            body: sea_orm::ActiveValue::set(upload
-                .file
-                .into_string()
-                .await
-                .map_err(poem::error::BadRequest)?),
-            user_id: sea_orm::ActiveValue::set(id.clone().to_string()),
-            creation_time:  sea_orm::ActiveValue::set(chrono::DateTime::parse_from_str(time_post_upload.format("%Y-%m-%d %H:%M:%S").to_string().as_str(), time_post_upload.offset().to_string().as_str()).unwrap()),
-            up_votes: sea_orm::ActiveValue::set(Some(0)),
-            down_votes: sea_orm::ActiveValue::set(Some(0)),
-            edit_time: sea_orm::ActiveValue::set(Some(chrono::DateTime::parse_from_str(time_post_upload.format("%Y-%m-%d %H:%M:%S").to_string().as_str(), time_post_upload.offset().to_string().as_str()).unwrap()))
+    //     let user_id: i32 = 0;
+    //     let time_post_upload = Local::now();
+    //     let post = entity::posts::ActiveModel {
+    //         title: sea_orm::ActiveValue::set(post_title.to_string()),
+    //         body: sea_orm::ActiveValue::set(upload
+    //             .file
+    //             .into_string()
+    //             .await
+    //             .map_err(poem::error::BadRequest)?),
+    //         user_id: sea_orm::ActiveValue::set(user_id),
+    //         creation_time:  sea_orm::ActiveValue::set(time_post_upload.into()),
+    //         edit_time: sea_orm::ActiveValue::set(None),
+    //         ..Default::default()
 
-        };
-        let post = posts::Entity::insert(post).exec(&self.database).await;
+    //     };
+    //     let post = entity::posts::Entity::insert(post).exec(&self.database).await;
 
-        println!("{post:?}");
+    //     println!("{post:?}");
 
-        Ok(Json(id.to_string()))
-    }
+    //     Ok(Json(pos))
+    // }
 
     // /// Get file
     // #[oai(path = "/file/download/:id", method = "get", tag = ApiTags::API)]

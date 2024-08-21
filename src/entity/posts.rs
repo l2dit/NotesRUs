@@ -6,8 +6,8 @@ use sea_orm::entity::prelude::*;
 #[sea_orm(table_name = "posts")]
 pub struct Model {
     #[sea_orm(primary_key)]
-    pub id: String,
-    pub user_id: String,
+    pub id: i32,
+    pub user_id: i32,
     pub up_votes: Option<i32>,
     pub down_votes: Option<i32>,
     pub title: String,

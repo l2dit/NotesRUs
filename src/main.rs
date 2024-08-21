@@ -23,16 +23,6 @@ async fn main() -> io::Result<()> {
     // Database Connection
     let database = Database::connect(&args.database_url).await.unwrap();
 
-    // Migration run
-    let _ = Migrator::up(&database, None).await;
-
-    // \\\\\\\\\\\DEMO-CODE\\\\\\\\\\
-    // let user = users::ActiveModel {
-    //     username: ActiveValue::set("notliam_99".into()),
-    //     name: ActiveValue::set("Liam T".into()),
-    //     most_recent_client: ActiveValue::not_set(),
-    //     role: ActiveValue::not_set(),
-    //     creation_time: ActiveValue::set(Local::now().into()),
     //     ..Default::default()
     // };
 

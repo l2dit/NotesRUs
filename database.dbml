@@ -2,8 +2,8 @@
 // Docs: https://dbml.dbdiagram.io/docs
 
 Table follow {
-  following_user_id varchar [not null]
-  followed_user_id varchar [not null]
+  following_user_id integer [not null]
+  followed_user_id integer [not null]
   created_at timestamp [not null]
 }
 
@@ -11,7 +11,7 @@ ref: users.id < follow.following_user_id
 ref: users.id < follow.followed_user_id
 
 Table users {
-  id varchar [primary key]
+  id integer [primary key]
   username varchar [not null, note: 'username assigned to user.']
   name varchar [note: 'real name of user optional.']
   recent_client integer [note: 'the last client to be used by the user']
@@ -23,8 +23,8 @@ Ref: users.recent_client - clients.id
 
 
 Table clients {
-  id varchar [not null, primary key, note: 'index not used by user']
-  user_id varchar [not null, note: 'client owner']
+  id integer [not null, primary key, note: 'index not used by user']
+  user_id integer [not null, note: 'client owner']
   identifier varchar [not null, note: 'hashed unique client identifier']
   secret varchar [not null, note: 'client secret']
 }
@@ -32,8 +32,8 @@ Table clients {
 Ref: clients.user_id > users.id
 
 Table posts {
-  id varchar [primary key]
-  user_id varchar [not null]
+  id integer [primary key]
+  user_id integer [not null]
   up_votes integer [not null]
   down_votes integer [not null]
   title varchar [not null]
@@ -45,10 +45,10 @@ Table posts {
 Ref: posts.user_id > users.id
 
 Table comments {
-  id varchar [primary key]
-  user_id varchar [not null]
-  post_id varchar [not null]
-  reply_coment_id varchar [note: 'can be null if not a reply']
+  id integer [primary key]
+  user_id integer [not null]
+  post_id integer [not null]
+  reply_coment_id integer [note: 'can be null if not a reply']
   body text [not null, note: 'comment content']
   created_at timestamp [not null, note:'timespamp of posting']
   edited_at timestamp [note: 'can be null if not been edited']
