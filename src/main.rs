@@ -23,6 +23,9 @@ async fn main() -> io::Result<()> {
     // Database Connection
     let database = Database::connect(&args.database_url).await.unwrap();
 
+    // Migration run
+    let _ = Migrator::up(&database, None).await;
+
     //     ..Default::default()
     // };
 
@@ -44,6 +47,7 @@ async fn main() -> io::Result<()> {
         .allow_origins(vec![
             cli::server_url(&args, None, true).as_str(),
             "http://localhost:5173",
+            "http://localhost:*",
         ])
         .allow_methods(vec!["GET", "POST", "PUT", "DELETE", "OPTIONS"])
         .allow_headers(vec![

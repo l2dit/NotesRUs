@@ -3,6 +3,7 @@ use std::fmt::Debug;
 use chrono::Local;
 use poem_openapi::{
     param::Path,
+    param::Query,
     payload::{Attachment, AttachmentType, Json, PlainText},
     types::ToJSON,
     OpenApi,
@@ -40,21 +41,20 @@ impl Api {
         responses::Redirect::Response("/api/docs".to_string())
     }
 
-    #[oai(path = "/auth/register", method = "get", tag = ApiTags::API)]
-    async fn create_user(&self, name: Option<String>, ) -> PlainText<String> {
+    #[oai(path = "/auth/user/register", method = "post", tag = ApiTags::API)]
+    async fn create_user(&self,name: Option<String>, ) -> PlainText<String> {
         let mut user: users::ActiveModel = users::ActiveModel {
-            username: sea_orm::ActiveValue::set("notliam_99".into()),
+            username: sea_orm::ActiveValue::set("zachlicious".into()),
             name: sea_orm::ActiveValue::not_set(),
             most_recent_client: sea_orm::ActiveValue::not_set(),
             role: sea_orm::ActiveValue::not_set(),
             creation_time: sea_orm::ActiveValue::set(Local::now().into()),
             ..Default::default()
         };
-        
-        match name {
-            Some(name) => user.set(users::Column::Name, name.into()),
-            _ => ()
-        }
+
+        if !name.is_empty() {
+            user.set(users::Column::Name, sea_orm::Value::from(name.as_str()))
+        };
 
         let user: users::Model = user.insert(&self.database).await.unwrap();
         println!("{user:?}");
