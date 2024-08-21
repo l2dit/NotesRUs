@@ -54,11 +54,23 @@ impl Api {
 
         if !name.is_none() {
             user.set(users::Column::Name, sea_orm::Value::from(name.clone().unwrap()))
+        }
+        else {
+            user.set(users::Column::Name, sea_orm::Value::from(user.username.clone().unwrap()))
         };
 
-        let user: users::Model = user.insert(&self.database).await.unwrap();
-        println!("{user:?}");
-        PlainText(format!("{user:?}"))
+        let user: Result<users::Model, sea_orm::DbErr> = user.insert(&self.database).await;
+
+        if user.is_err() {
+            let error = user.unwrap_err();
+            println!("ERROR: {error:?}");
+            PlainText(format!("{error:?}"))
+        }
+        else {
+            let user: users::Model = user.unwrap();
+            println!("{user:?}");
+            PlainText(format!("{user:?}"))
+        }
     }
 
     #[oai(path = "/auth/session:c_id:user_id:c_sec", method = "get", tag = ApiTags::API)]
