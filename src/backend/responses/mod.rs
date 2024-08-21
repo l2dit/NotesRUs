@@ -4,6 +4,8 @@ use poem_openapi::{
     ApiResponse, Multipart,
 };
 
+pub mod user;
+
 #[derive(Debug, ApiResponse)]
 pub enum GetFileResponse {
     #[oai(status = 200)]

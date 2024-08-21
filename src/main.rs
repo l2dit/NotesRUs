@@ -1,21 +1,22 @@
-use chrono::Local;
+use hmac::{Hmac, Mac};
 use notes_r_us::{
-    backend,
-    entity::{prelude::*, users},
+    backend::{
+        self,
+        auth::{self, ServerSecret},
+    },
+    cli,
 };
 use poem::{
     endpoint::StaticFilesEndpoint, listener::TcpListener, middleware::Cors, middleware::Tracing,
     EndpointExt, Route, Server,
 };
 use poem_openapi::OpenApiService;
-use sea_orm::{ActiveValue, Database, EntityTrait};
+use sea_orm::{Database, DatabaseConnection};
 use std::{env, io};
 use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
 
 use notes_r_us_migrations::{self, Migrator, MigratorTrait};
-
-mod cli;
 
 #[tokio::main]
 async fn main() -> io::Result<()> {
@@ -23,25 +24,15 @@ async fn main() -> io::Result<()> {
     let args = cli::parse();
 
     // Database Connection
-    let database = Database::connect(&args.database_url).await.unwrap();
+    let database_connection: DatabaseConnection =
+        Database::connect(&args.database_url).await.unwrap();
 
     // Migration run
-    let _ = Migrator::up(&database, None).await;
+    let _ = Migrator::up(&database_connection, None).await;
 
-    // \\\\\\\\\\\DEMO-CODE\\\\\\\\\\
-    // let user = users::ActiveModel {
-    //     username: ActiveValue::set("notliam_99".into()),
-    //     name: ActiveValue::set("Liam T".into()),
-    //     most_recent_client: ActiveValue::not_set(),
-    //     role: ActiveValue::not_set(),
-    //     creation_time: ActiveValue::set(Local::now().into()),
-    //     ..Default::default()
-    // };
-
-    // let user = Users::insert(user).exec(&database).await;
-
-    // println!("{user:?}");
-    // \\\\\\\\\\DEMO-CODE\\\\\\\\\
+    // Hmac Signing Key
+    let server_key: ServerSecret = Hmac::new_from_slice(args.server_secret.as_bytes())
+        .expect("The Server Secret Is Too Short This Is Insecure");
 
     // Set up tracing subscriber for logging
     let subscriber = FmtSubscriber::builder()
@@ -81,10 +72,8 @@ async fn main() -> io::Result<()> {
     // Create the API service
     let api_service = OpenApiService::new(
         backend::Api {
-            status: tokio::sync::Mutex::new(backend::Status {
-                id: 1,
-                files: Default::default(),
-            }),
+            args: args.clone(),
+            database_connection,
         },
         "Notes R Us API Documentation",
         env!("CARGO_PKG_VERSION"),
@@ -101,7 +90,8 @@ async fn main() -> io::Result<()> {
                 .nest("/", api_service)
                 .nest("/docs", ui_docs_swagger)
                 .with(cors)
-                .with(Tracing),
+                .with(Tracing)
+                .data(server_key),
         )
         .nest(
             "/",

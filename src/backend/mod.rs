@@ -1,122 +1,95 @@
-use chrono::{TimeZone, Utc};
-use chrono_tz::Pacific::Auckland;
-use poem_openapi::{
-    param::Path,
-    payload::{Attachment, AttachmentType, Json},
-    types::ToJSON,
-    OpenApi,
-};
-use serde_json;
-#[path = "responses/mod.rs"]
+use std::default;
+
+use chrono::{Datelike, Local};
+use jwt::SignWithKey;
+use poem::web::Data;
+use poem_openapi::{param::Header, payload::Json, OpenApi};
+use sea_orm::DatabaseConnection;
+use serde_json::{json, Value};
+use uuid::Uuid;
+
+use self::auth::{ServerSecret, UserToken};
+
+use super::cli::Args;
+
+pub mod auth;
 pub mod responses;
 
 #[derive(poem_openapi::Tags)]
-enum ApiTags {
-    /// All public API endpoints.
-    API,
-}
-
-#[derive(Debug, poem_openapi::Object, Clone)]
-pub struct File {
-    filename: Option<String>,
-    data: Vec<u8>,
-    upload_time: String,
-}
-
-pub struct Status {
-    pub id: u64,
-    pub files: std::collections::HashMap<u64, File>,
+pub enum ApiTags {
+    /// These routes are responsible for the creation and mangment of user accounts.
+    User,
+    /// Route Redirects To Docs
+    Redirects,
 }
 
 pub struct Api {
-    pub status: tokio::sync::Mutex<Status>,
+    pub database_connection: DatabaseConnection,
+    pub args: Args,
 }
 
+/// Notes R Us API
+///
+/// # The Rust Documentation can be found at
+/// [docs.rs/notes_r_us/latest/notes_r_us/backend](https://docs.rs/notes_r_us/latest/notes_r_us/backend)
 #[OpenApi]
 impl Api {
-    /// Index / Docs
-    #[oai(path = "/", method = "get", tag = ApiTags::API)]
-    async fn index(&self) -> responses::Redirect {
+    /// Redirect The Index Path
+    ///
+    /// # Redirects
+    /// This Redirects the user from `.../` to `.../docs`
+    #[oai(path = "/", method = "get", tag = ApiTags::Redirects)]
+    pub async fn index(&self) -> responses::Redirect {
         responses::Redirect::Response("/api/docs".to_string())
     }
 
-    /// Upload file
-    #[oai(path = "/file/upload", method = "post", tag = ApiTags::API)]
-    async fn upload_file(&self, upload: responses::UploadPayload) -> poem::Result<Json<u64>> {
-        let mut status = self.status.lock().await;
-        let id = status.id;
-        status.id += 1;
-
-        let utc = Utc::now().naive_utc();
-        let dt = Auckland.from_utc_datetime(&utc);
-        let time_file_upload: chrono::format::DelayedFormat<chrono::format::StrftimeItems> =
-            dt.format("%Y-%m-%d %H:%M:%S");
-
-        let file = File {
-            filename: upload.file.file_name().map(ToString::to_string),
-            data: upload
-                .file
-                .into_vec()
-                .await
-                .map_err(poem::error::BadRequest)?,
-            upload_time: time_file_upload.to_string(),
+    /// User Creation
+    ///
+    /// # User Creation
+    /// This route is to be used to create a new user.
+    ///
+    /// Name param will be used on the data base side witch has not been implemted yet...
+    #[oai(path = "/user/creation", method = "get", tag = ApiTags::User)]
+    pub async fn create_user(
+        &self,
+        server_secret: Data<&ServerSecret>,
+        #[oai(name = "Name")] name: Header<Option<String>>,
+        #[oai(name = "ClientName")] client_name: Header<Option<String>>,
+    ) -> responses::user::CreateUserResponse {
+        let mut client = UserToken {
+            client_secret: Uuid::new_v4()
+                .sign_with_key(&server_secret.clone())
+                .expect("Could Not Sign Client Secret"),
+            user_name: "username".to_string(),
+            ..Default::default()
         };
-        status.files.insert(id, file);
-        Ok(Json(id))
-    }
 
-    /// Get file
-    #[oai(path = "/file/download/:id", method = "get", tag = ApiTags::API)]
-    async fn get_file(&self, id: Path<u64>) -> responses::GetFileResponse {
-        let status = self.status.lock().await;
-        match status.files.get(&id) {
-            Some(file) => {
-                let mut attachment =
-                    Attachment::new(file.data.clone()).attachment_type(AttachmentType::Attachment);
-                if let Some(filename) = &file.filename {
-                    attachment = attachment.filename(filename);
-                }
-                responses::GetFileResponse::Ok(attachment)
-            }
-            None => responses::GetFileResponse::NotFound,
+        match client_name.clone() {
+            Some(client_name) => client.client_identifier = client_name,
+            None => (),
         }
+
+        responses::user::CreateUserResponse::Ok(
+            Json(json!({
+                "message": format!("{} accont has not been created", name.clone().unwrap_or("".to_string())).as_str()
+            })),
+            client.to_cookie_string(&self.args, server_secret.0.clone(), None),
+        )
     }
 
-    /// Delete markdown file
-    #[oai(path = "/file/delete/:id", method = "delete", tag = ApiTags::API)]
-    async fn delete_file(&self, id: Path<u64>) -> responses::DeleteFileResponse {
-        let mut status = self.status.lock().await;
-        if status.files.get(&id).is_some() {
-            status.files.remove(&id).unwrap();
-
-            responses::DeleteFileResponse::Ok(Json(format!(
-                "Deleted file with id: {}",
-                id.to_string()
-            )))
-        } else {
-            responses::DeleteFileResponse::NotFound
-        }
-    }
-
-    /// View file markdown content
-    #[oai(path = "/file/view/:id", method = "get", tag = ApiTags::API)]
-    async fn view_file(&self, id: Path<u64>) -> responses::ViewFileResponse {
-        let status = self.status.lock().await;
-        match status.files.get(&id) {
-            Some(file) => {
-                let file_content: String = String::from_utf8(file.data.clone()).unwrap();
-
-                responses::ViewFileResponse::Ok(poem_openapi::payload::PlainText(file_content))
-            }
-            None => responses::ViewFileResponse::NotFound,
-        }
-    }
-
-    /// Get all files
-    #[oai(path = "/file/all", method = "get", tag = ApiTags::API)]
-    async fn get_all_files(&self) -> poem::Result<Json<serde_json::Value>> {
-        let status = self.status.lock().await;
-
-        Ok(Json(status.files.to_json().unwrap()))
+    /// User Edit
+    ///
+    /// # Edit Name
+    /// This route is to remove or change the name of the user note this is not the same as
+    /// username.
+    ///
+    /// note this is just for testing at the moment enter a nonsence name as this is not used
+    #[oai(path = "/user/edit", method = "get", tag = ApiTags::User)]
+    pub async fn wow(
+        &self,
+        auth: auth::ApiSecurityScheme,
+        #[oai(name = "NewName")] username: Header<String>,
+    ) -> Json<Value> {
+        Json(json!({"Info": {"ActiveUserToken": auth.0, "Name": username.clone()}}))
     }
 }
