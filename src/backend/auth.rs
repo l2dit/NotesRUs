@@ -70,7 +70,7 @@ impl UserToken {
             .expect("Couldn't Sign User Token");
 
         format!(
-            "{}={}; Max-Age=15778800; SameSite=Strict; Domain={}{secure}",
+            "{}={}; Max-Age=15778800; SameSite=Secure; Path=/api; Domain={}{secure}",
             cookie_name.unwrap_or("ActiveUserToken".to_string()),
             signed_user_token,
             args.domain

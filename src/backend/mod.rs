@@ -1,31 +1,46 @@
-use std::default;
-
-use chrono::{Datelike, Local};
 use jwt::SignWithKey;
 use poem::web::Data;
-use poem_openapi::{param::Header, payload::Json, OpenApi};
+use poem_openapi::{
+    param::Header,
+    payload::{Json, PlainText},
+    OpenApi, Tags,
+};
 use sea_orm::DatabaseConnection;
+use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use uuid::Uuid;
 
-use self::auth::{ServerSecret, UserToken};
+use self::{
+    auth::{ServerSecret, UserToken},
+    requests::post::{PostCreation, PostCreationBody},
+    responses::post::{PostCreationResponse, PostCreationSuccess},
+};
 
 use super::cli::Args;
 
 pub mod auth;
+pub mod requests;
 pub mod responses;
 
-#[derive(poem_openapi::Tags)]
+#[derive(Tags)]
 pub enum ApiTags {
     /// These routes are responsible for the creation and mangment of user accounts.
     User,
     /// Route Redirects To Docs
     Redirects,
+    /// Post Managemet
+    Post,
 }
 
 pub struct Api {
     pub database_connection: DatabaseConnection,
     pub args: Args,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Wow {
+    cow: String,
+    wow: String,
 }
 
 /// Notes R Us API
@@ -91,5 +106,24 @@ impl Api {
         #[oai(name = "NewName")] username: Header<String>,
     ) -> Json<Value> {
         Json(json!({"Info": {"ActiveUserToken": auth.0, "Name": username.clone()}}))
+    }
+
+    /// Create A New Post/Note
+    ///
+    /// This route is to create A new post and returning a adquite response to user.
+    #[oai(path = "/post/create", method = "put", tag = ApiTags::Post)]
+    pub async fn test(
+        &self,
+        auth: auth::ApiSecurityScheme,
+        req: PostCreation,
+    ) -> PostCreationResponse {
+        let body = match req {
+            PostCreation::CreatePost(body) => body,
+        };
+
+        PostCreationResponse::PostCreated(Json(PostCreationSuccess {
+            username: "coolname".to_string(),
+            post_id: 10u64,
+        }))
     }
 }

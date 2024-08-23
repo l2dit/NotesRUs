@@ -8,4 +8,7 @@ pub enum CreateUserResponse {
         Json<serde_json::Value>,
         #[oai(header = "Set-Cookie")] String,
     ),
+    /// Error To Create User
+    #[oai(status = "401")]
+    Err(Json<serde_json::Value>),
 }
