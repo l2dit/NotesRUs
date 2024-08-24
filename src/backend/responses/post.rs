@@ -36,9 +36,6 @@ pub enum PostCreationResponse {
     /// Post Is Successfuly Created
     #[oai(status = 201)]
     PostCreated(Json<PostResponseSuccess>),
-    /// Request Sender Is Not Authorised
-    #[oai(status = 401)]
-    Unauthorized,
     /// Bad Request With Error Response
     #[oai(status = 400)]
     Err(PlainText<String>),
@@ -54,10 +51,27 @@ pub enum PostEditionResponse {
     /// Edit Completed Successfuly
     #[oai(status = 200)]
     PostEdtion(Json<PostResponseSuccess>),
-    // Requesting User Is Unauthorised
-    #[oai(status = 401)]
-    Unauthorized,
+    // Requesting User Is Unauthorised To Preform Action
+    #[oai(status = 403)]
+    Forbiden,
     /// Bad Request With Error Response
+    ///
+    /// Dev notes: Might Not be needed...
     #[oai(status = 400)]
     Err(PlainText<String>),
+}
+
+/// Post/Note Deletion Response
+///
+/// # Responds
+///
+/// Lets the user know if there action was successfull or if it was forbiden
+#[derive(ApiResponse)]
+pub enum PostDeletionResponse {
+    /// Deletion Was Completed Successfuly
+    #[oai(status = 200)]
+    PostDeletion(Json<PostResponseSuccess>),
+    /// Requesting User Is Unautorized To Preform Action
+    #[oai(status = 403)]
+    Forbiden,
 }

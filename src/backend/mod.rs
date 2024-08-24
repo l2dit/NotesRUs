@@ -8,8 +8,10 @@ use uuid::Uuid;
 
 use self::{
     auth::{ServerSecret, UserToken},
-    requests::post::{PostCreation, PostEdition},
-    responses::post::{PostCreationResponse, PostResponseSuccess, PostEditionResponse},
+    requests::post::{PostCreation, PostDeletion, PostEdition},
+    responses::post::{
+        PostCreationResponse, PostDeletionResponse, PostEditionResponse, PostResponseSuccess,
+    },
 };
 
 use super::cli::Args;
@@ -124,7 +126,7 @@ impl Api {
     }
 
     /// Edit An Exsiting Post/Note
-    /// 
+    ///
     /// This route is to edit an existing post by `PostId`.
     #[oai(path = "/post/edit", method = "post", tag = ApiTags::Post)]
     pub async fn post_edit(
@@ -133,6 +135,18 @@ impl Api {
         #[oai(name = "PostId")] post_id: Header<String>,
         req: PostEdition,
     ) -> PostEditionResponse {
-        PostEditionResponse::Unauthorized
+        PostEditionResponse::Forbiden
+    }
+
+    /// Delete A Post/Note
+    ///
+    /// This route is to delete a note by `PostId`.
+    #[oai(path = "/post/delete", method = "delete", tag = ApiTags::Post)]
+    pub async fn post_delete(
+        &self,
+        auth: auth::ApiSecurityScheme,
+        req: PostDeletion,
+    ) -> PostDeletionResponse {
+        PostDeletionResponse::Forbiden
     }
 }
