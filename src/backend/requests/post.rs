@@ -13,7 +13,7 @@ fn body() -> String {
 
 /// Body of the Post/Note Creation
 #[derive(Object, Serialize)]
-pub struct PostCreationBody {
+pub struct PostBody {
     /// The Title Of You Post/Note
     #[oai(default = "title")]
     title: String,
@@ -22,9 +22,16 @@ pub struct PostCreationBody {
     body: String,
 }
 
-/// Post/Note Creation Body
+/// Post/Note Creation
 #[derive(ApiRequest)]
 pub enum PostCreation {
     /// Json Request Body
-    CreatePost(Json<PostCreationBody>),
+    CreatePost(Json<PostBody>),
+}
+
+/// Post/Note Eddition
+#[derive(ApiRequest)]
+pub enum PostEdition {
+    /// Json Request Body
+    EditPost(Json<PostBody>),
 }

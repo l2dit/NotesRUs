@@ -1,10 +1,6 @@
 use jwt::SignWithKey;
 use poem::web::Data;
-use poem_openapi::{
-    param::Header,
-    payload::{Json, PlainText},
-    OpenApi, Tags,
-};
+use poem_openapi::{param::Header, payload::Json, OpenApi, Tags};
 use sea_orm::DatabaseConnection;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
@@ -12,8 +8,8 @@ use uuid::Uuid;
 
 use self::{
     auth::{ServerSecret, UserToken},
-    requests::post::{PostCreation, PostCreationBody},
-    responses::post::{PostCreationResponse, PostCreationSuccess},
+    requests::post::{PostCreation, PostEdition},
+    responses::post::{PostCreationResponse, PostResponseSuccess, PostEditionResponse},
 };
 
 use super::cli::Args;
@@ -112,7 +108,7 @@ impl Api {
     ///
     /// This route is to create A new post and returning a adquite response to user.
     #[oai(path = "/post/create", method = "put", tag = ApiTags::Post)]
-    pub async fn test(
+    pub async fn post_create(
         &self,
         auth: auth::ApiSecurityScheme,
         req: PostCreation,
@@ -121,9 +117,22 @@ impl Api {
             PostCreation::CreatePost(body) => body,
         };
 
-        PostCreationResponse::PostCreated(Json(PostCreationSuccess {
+        PostCreationResponse::PostCreated(Json(PostResponseSuccess {
             username: "coolname".to_string(),
             post_id: 10u64,
         }))
+    }
+
+    /// Edit An Exsiting Post/Note
+    /// 
+    /// This route is to edit an existing post by `PostId`.
+    #[oai(path = "/post/edit", method = "post", tag = ApiTags::Post)]
+    pub async fn post_edit(
+        &self,
+        auth: auth::ApiSecurityScheme,
+        #[oai(name = "PostId")] post_id: Header<String>,
+        req: PostEdition,
+    ) -> PostEditionResponse {
+        PostEditionResponse::Unauthorized
     }
 }

@@ -13,11 +13,11 @@ fn post_id_default() -> u64 {
     123u64
 }
 
-/// Post Creation Info
+/// Post/Note Creation Info
 ///
 /// Gives requried info to find the post.
 #[derive(Object)]
-pub struct PostCreationSuccess {
+pub struct PostResponseSuccess {
     /// The Username Of the Creator
     #[oai(default = "username_default")]
     pub username: String,
@@ -26,7 +26,7 @@ pub struct PostCreationSuccess {
     pub post_id: u64,
 }
 
-/// Post Creation Response
+/// Post/Note Creation Response
 ///
 /// # Responds
 ///
@@ -34,12 +34,30 @@ pub struct PostCreationSuccess {
 #[derive(ApiResponse)]
 pub enum PostCreationResponse {
     /// Post Is Successfuly Created
-    #[oai(status = 200)]
-    PostCreated(Json<PostCreationSuccess>),
+    #[oai(status = 201)]
+    PostCreated(Json<PostResponseSuccess>),
     /// Request Sender Is Not Authorised
     #[oai(status = 401)]
     Unauthorized,
-    /// Bad Request With Err Message
+    /// Bad Request With Error Response
+    #[oai(status = 400)]
+    Err(PlainText<String>),
+}
+
+/// Post/Note Edition Response
+///
+/// # Responds
+///
+/// Tells the user basic info to find there post or show why there request failed.
+#[derive(ApiResponse)]
+pub enum PostEditionResponse {
+    /// Edit Completed Successfuly
+    #[oai(status = 200)]
+    PostEdtion(Json<PostResponseSuccess>),
+    // Requesting User Is Unauthorised
+    #[oai(status = 401)]
+    Unauthorized,
+    /// Bad Request With Error Response
     #[oai(status = 400)]
     Err(PlainText<String>),
 }
