@@ -3,12 +3,12 @@ use poem_openapi::{
     ApiResponse, Object,
 };
 
-/// Default Value For `username` in [`PostCreationSuccess`]
+/// Default Value For `username` in [`PostResponseSuccess`]
 fn username_default() -> String {
     "UserName".to_string()
 }
 
-/// Default Value For `post_id` in [`PostCreationSuccess`]
+/// Default Value For `post_id` in [`PostResponseSuccess`]
 fn post_id_default() -> u64 {
     123u64
 }
@@ -24,6 +24,18 @@ pub struct PostResponseSuccess {
     /// The Id Of The Post/Note On The Creators Account
     #[oai(default = "post_id_default")]
     pub post_id: u64,
+}
+
+#[derive(Object)]
+pub struct Post {
+    pub username: String,
+    pub post_id: u64,
+    pub title: String,
+    pub body: String,
+    pub created_at: String,
+    pub edited_at: String,
+    pub up_votes: u64,
+    pub down_votes: u64,
 }
 
 /// Post/Note Creation Response
@@ -74,4 +86,14 @@ pub enum PostDeletionResponse {
     /// Requesting User Is Unautorized To Preform Action
     #[oai(status = 403)]
     Forbiden,
+}
+
+#[derive(ApiResponse)]
+pub enum PostGetResponse {
+    /// Post/Note Found Successfuly
+    #[oai(status = 200)]
+    PostFound(Json<Post>),
+    /// Post/Note Was Not Found
+    #[oai(status = 404)]
+    PostNotFound,
 }

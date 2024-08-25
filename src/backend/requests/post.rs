@@ -17,7 +17,7 @@ fn post_id_default() -> u64 {
 
 /// Body of the Post/Note Creation Request
 #[derive(Object)]
-pub struct PostBody {
+pub struct PostContentBody {
     /// The Title Of You Post/Note
     #[oai(default = "title_default")]
     title: String,
@@ -26,10 +26,10 @@ pub struct PostBody {
     body: String,
 }
 
-/// Body Of Post/Note Deletion Request
+/// Body Of Post/Note A Select Type Request
 #[derive(Object)]
-pub struct PostDeletionBody {
-    /// Post/Note You Want To Be Deleted
+pub struct PostSelectionBody {
+    /// Post/Note You Want To Be Select
     #[oai(default = "post_id_default")]
     post_id: u64,
 }
@@ -38,19 +38,19 @@ pub struct PostDeletionBody {
 #[derive(ApiRequest)]
 pub enum PostCreation {
     /// Json Request Body
-    CreatePost(Json<PostBody>),
+    CreatePost(Json<PostContentBody>),
 }
 
 /// Post/Note Edition
 #[derive(ApiRequest)]
 pub enum PostEdition {
     /// Json Request Body
-    EditPost(Json<PostBody>),
+    EditPost(Json<PostContentBody>),
 }
 
-/// Post/Note Deletion
+/// Post/Note Selection
 #[derive(ApiRequest)]
-pub enum PostDeletion {
+pub enum PostSelection {
     /// Requests Json Body
-    DeletePost(Json<PostDeletionBody>),
+    DeletePost(Json<PostSelectionBody>),
 }

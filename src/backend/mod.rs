@@ -1,6 +1,10 @@
 use jwt::SignWithKey;
 use poem::web::Data;
-use poem_openapi::{param::Header, payload::Json, OpenApi, Tags};
+use poem_openapi::{
+    param::{Header, Query},
+    payload::Json,
+    OpenApi, Tags,
+};
 use sea_orm::DatabaseConnection;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
@@ -8,9 +12,10 @@ use uuid::Uuid;
 
 use self::{
     auth::{ServerSecret, UserToken},
-    requests::post::{PostCreation, PostDeletion, PostEdition},
+    requests::post::{PostCreation, PostEdition, PostSelection},
     responses::post::{
-        PostCreationResponse, PostDeletionResponse, PostEditionResponse, PostResponseSuccess,
+        PostCreationResponse, PostDeletionResponse, PostEditionResponse, PostGetResponse,
+        PostResponseSuccess,
     },
 };
 
@@ -145,8 +150,16 @@ impl Api {
     pub async fn post_delete(
         &self,
         auth: auth::ApiSecurityScheme,
-        req: PostDeletion,
+        req: PostSelection,
     ) -> PostDeletionResponse {
         PostDeletionResponse::Forbiden
+    }
+
+    /// Get A Post/Note
+    ///
+    /// This route gets posts/notes by id.
+    #[oai(path = "/post/get", method = "get", tag = ApiTags::Post)]
+    pub async fn post_get(&self, #[oai(name = "PostId")] post_id: Query<u64>) -> PostGetResponse {
+        PostGetResponse::PostNotFound
     }
 }
