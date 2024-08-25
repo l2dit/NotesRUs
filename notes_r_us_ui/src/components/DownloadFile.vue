@@ -27,7 +27,7 @@ export default {
       /* gets the id of the file the user wants to fetch */
       const file_id = document.getElementById("file-id").value;
       /* route to make requests to */
-      let get_route = `${route}/api/file/download/${file_id}`;
+      let get_route = `${route}/file/download/${file_id}`;
       /* make get request to the route */
       axios.get(get_route)
         .then(response => {
