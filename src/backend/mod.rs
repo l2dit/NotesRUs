@@ -1,7 +1,4 @@
-use chrono::{Datelike, Local};
-use jwt::SignWithKey;
-use poem::web::Data;
-use poem_openapi::{param::Header, payload::PlainText, payload::Json, OpenApi};
+use chrono::Local;
 use jwt::SignWithKey;
 use poem::web::Data;
 use poem_openapi::{
@@ -14,15 +11,16 @@ use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use uuid::Uuid;
 use sea_orm::ActiveModelTrait;
-use crate::entity::users;
-
-use self::{
-    auth::{ServerSecret, UserToken},
-    requests::post::{PostCreation, PostEdition, PostSelection},
-    responses::post::{
-        PostCreationResponse, PostDeletionResponse, PostEditionResponse, PostGetResponse,
-        PostResponseSuccess,
-    },
+use crate::{
+    entity::users,
+    backend::{
+        auth::{ServerSecret, UserToken},
+        requests::post::{PostCreation, PostEdition, PostSelection},
+        responses::post::{
+            PostCreationResponse, PostDeletionResponse, PostEditionResponse, PostGetResponse,
+            PostResponseSuccess,
+        },
+    }
 };
 
 use super::cli::Args;
