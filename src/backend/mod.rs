@@ -1,3 +1,7 @@
+use chrono::{Datelike, Local};
+use jwt::SignWithKey;
+use poem::web::Data;
+use poem_openapi::{param::Header, payload::PlainText, payload::Json, OpenApi};
 use jwt::SignWithKey;
 use poem::web::Data;
 use poem_openapi::{
@@ -9,6 +13,8 @@ use sea_orm::DatabaseConnection;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use uuid::Uuid;
+use sea_orm::ActiveModelTrait;
+use crate::entity::users;
 
 use self::{
     auth::{ServerSecret, UserToken},
@@ -85,14 +91,43 @@ impl Api {
         match client_name.clone() {
             Some(client_name) => client.client_identifier = client_name,
             None => (),
+        };
+
+        let mut user: users::ActiveModel = users::ActiveModel {
+            username: sea_orm::ActiveValue::set("zachlicious".into()),
+            name: sea_orm::ActiveValue::not_set(),
+            most_recent_client: sea_orm::ActiveValue::not_set(),
+            role: sea_orm::ActiveValue::not_set(),
+            creation_time: sea_orm::ActiveValue::set(Local::now().into()),
+            ..Default::default()
+        };
+
+        if !name.is_none() {
+            user.set(users::Column::Name, sea_orm::Value::from(name.clone().unwrap()))
         }
 
-        responses::user::CreateUserResponse::Ok(
-            Json(json!({
-                "message": format!("{} accont has not been created", name.clone().unwrap_or("".to_string())).as_str()
-            })),
-            client.to_cookie_string(&self.args, server_secret.0.clone(), None),
-        )
+
+        let user: Result<users::Model, sea_orm::DbErr> = user.insert(&self.database_connection).await;
+
+        match user {
+            Err(error) => {
+                println!("ERROR: {error:?}");
+                return responses::user::CreateUserResponse::ERROR(Json(json!({"error" : format!("{error:?}"), "code":500})))
+            },
+            
+            Ok(user) => {
+                let user: users::Model = user;
+                println!("{user:?}");
+                return responses::user::CreateUserResponse::Ok(
+                    Json(json!({
+                        "message": format!("{} accont has been created", name.clone().unwrap_or("".to_string())).as_str()
+                    })),
+                    client.to_cookie_string(&self.args, server_secret.0.clone(), None),
+                )
+            }
+        }
+
+
     }
 
     /// User Edit
