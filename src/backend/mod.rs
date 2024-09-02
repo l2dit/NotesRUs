@@ -2,30 +2,54 @@ use chrono::{Datelike, Local};
 use jwt::SignWithKey;
 use poem::web::Data;
 use poem_openapi::{param::Header, payload::PlainText, payload::Json, OpenApi};
+use jwt::SignWithKey;
+use poem::web::Data;
+use poem_openapi::{
+    param::{Header, Query},
+    payload::Json,
+    OpenApi, Tags,
+};
 use sea_orm::DatabaseConnection;
+use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use uuid::Uuid;
 use sea_orm::ActiveModelTrait;
 use crate::entity::users;
 
-use self::auth::{ServerSecret, UserToken};
+use self::{
+    auth::{ServerSecret, UserToken},
+    requests::post::{PostCreation, PostEdition, PostSelection},
+    responses::post::{
+        PostCreationResponse, PostDeletionResponse, PostEditionResponse, PostGetResponse,
+        PostResponseSuccess,
+    },
+};
 
 use super::cli::Args;
 
 pub mod auth;
+pub mod requests;
 pub mod responses;
 
-#[derive(poem_openapi::Tags)]
+#[derive(Tags)]
 pub enum ApiTags {
     /// These routes are responsible for the creation and mangment of user accounts.
     User,
     /// Route Redirects To Docs
     Redirects,
+    /// Post Managemet
+    Post,
 }
 
 pub struct Api {
     pub database_connection: DatabaseConnection,
     pub args: Args,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Wow {
+    cow: String,
+    wow: String,
 }
 
 /// Notes R Us API
@@ -120,5 +144,57 @@ impl Api {
         #[oai(name = "NewName")] username: Header<String>,
     ) -> Json<Value> {
         Json(json!({"Info": {"ActiveUserToken": auth.0, "Name": username.clone()}}))
+    }
+
+    /// Create A New Post/Note
+    ///
+    /// This route is to create A new post and returning a adquite response to user.
+    #[oai(path = "/post/create", method = "put", tag = ApiTags::Post)]
+    pub async fn post_create(
+        &self,
+        auth: auth::ApiSecurityScheme,
+        req: PostCreation,
+    ) -> PostCreationResponse {
+        let body = match req {
+            PostCreation::CreatePost(body) => body,
+        };
+
+        PostCreationResponse::PostCreated(Json(PostResponseSuccess {
+            username: "coolname".to_string(),
+            post_id: 10u64,
+        }))
+    }
+
+    /// Edit An Exsiting Post/Note
+    ///
+    /// This route is to edit an existing post by `PostId`.
+    #[oai(path = "/post/edit", method = "post", tag = ApiTags::Post)]
+    pub async fn post_edit(
+        &self,
+        auth: auth::ApiSecurityScheme,
+        #[oai(name = "PostId")] post_id: Header<String>,
+        req: PostEdition,
+    ) -> PostEditionResponse {
+        PostEditionResponse::Forbiden
+    }
+
+    /// Delete A Post/Note
+    ///
+    /// This route is to delete a note by `PostId`.
+    #[oai(path = "/post/delete", method = "delete", tag = ApiTags::Post)]
+    pub async fn post_delete(
+        &self,
+        auth: auth::ApiSecurityScheme,
+        req: PostSelection,
+    ) -> PostDeletionResponse {
+        PostDeletionResponse::Forbiden
+    }
+
+    /// Get A Post/Note
+    ///
+    /// This route gets posts/notes by id.
+    #[oai(path = "/post/get", method = "get", tag = ApiTags::Post)]
+    pub async fn post_get(&self, #[oai(name = "PostId")] post_id: Query<u64>) -> PostGetResponse {
+        PostGetResponse::PostNotFound
     }
 }

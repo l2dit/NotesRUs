@@ -4,6 +4,7 @@ use poem_openapi::{
     ApiResponse, Multipart,
 };
 
+pub mod post;
 pub mod user;
 
 #[derive(Debug, ApiResponse)]
