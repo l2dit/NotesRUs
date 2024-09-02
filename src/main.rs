@@ -1,9 +1,6 @@
 use hmac::{Hmac, Mac};
 use notes_r_us::{
-    backend::{
-        self,
-        auth::{self, ServerSecret},
-    },
+    backend::{auth::ServerSecret, Api},
     cli,
 };
 use poem::{
@@ -16,7 +13,7 @@ use std::{env, io};
 use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
 
-use notes_r_us_migrations::{self, Migrator, MigratorTrait};
+use notes_r_us_migrations::{Migrator, MigratorTrait};
 
 #[tokio::main]
 async fn main() -> io::Result<()> {
@@ -71,7 +68,7 @@ async fn main() -> io::Result<()> {
 
     // Create the API service
     let api_service = OpenApiService::new(
-        backend::Api {
+        Api {
             args: args.clone(),
             database_connection,
         },

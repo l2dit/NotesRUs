@@ -1,18 +1,4 @@
-use chrono::Local;
-use jwt::SignWithKey;
-use poem::web::Data;
-use poem_openapi::{
-    param::{Header, Query},
-    payload::Json,
-    OpenApi, Tags,
-};
-use sea_orm::DatabaseConnection;
-use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
-use uuid::Uuid;
-use sea_orm::ActiveModelTrait;
 use crate::{
-    entity::users,
     backend::{
         auth::{ServerSecret, UserToken},
         requests::post::{PostCreation, PostEdition, PostSelection},
@@ -20,8 +6,22 @@ use crate::{
             PostCreationResponse, PostDeletionResponse, PostEditionResponse, PostGetResponse,
             PostResponseSuccess,
         },
-    }
+    },
+    entity::users,
 };
+use chrono::Local;
+use jwt::SignWithKey;
+use names::{Generator, Name};
+use poem::web::Data;
+use poem_openapi::{
+    param::{Header, Query},
+    payload::Json,
+    OpenApi, Tags,
+};
+use sea_orm::ActiveModelTrait;
+use sea_orm::DatabaseConnection;
+use serde_json::{json, Value};
+use uuid::Uuid;
 
 use super::cli::Args;
 
@@ -44,11 +44,8 @@ pub struct Api {
     pub args: Args,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Wow {
-    cow: String,
-    wow: String,
-}
+// for development pruposes only should be removed
+#[allow(unused_variables)]
 
 /// Notes R Us API
 ///
@@ -78,11 +75,16 @@ impl Api {
         #[oai(name = "Name")] name: Header<Option<String>>,
         #[oai(name = "ClientName")] client_name: Header<Option<String>>,
     ) -> responses::user::CreateUserResponse {
+        let generated_username: String = Generator::with_naming(Name::Numbered)
+            .next()
+            .unwrap()
+            .to_string();
+
         let mut client = UserToken {
             client_secret: Uuid::new_v4()
                 .sign_with_key(&server_secret.clone())
                 .expect("Could Not Sign Client Secret"),
-            user_name: "username".to_string(),
+            user_name: generated_username.clone(),
             ..Default::default()
         };
 
@@ -92,7 +94,7 @@ impl Api {
         };
 
         let mut user: users::ActiveModel = users::ActiveModel {
-            username: sea_orm::ActiveValue::set("zachlicious".into()),
+            username: sea_orm::ActiveValue::set(generated_username.clone()),
             name: sea_orm::ActiveValue::not_set(),
             most_recent_client: sea_orm::ActiveValue::not_set(),
             role: sea_orm::ActiveValue::not_set(),
@@ -100,19 +102,22 @@ impl Api {
             ..Default::default()
         };
 
-        if !name.is_none() {
-            user.set(users::Column::Name, sea_orm::Value::from(name.clone().unwrap()))
+        match name.0 {
+            Some(ref name_value) => user.set(users::Column::Name, name_value.into()),
+            None => (),
         }
 
-
-        let user: Result<users::Model, sea_orm::DbErr> = user.insert(&self.database_connection).await;
+        let user: Result<users::Model, sea_orm::DbErr> =
+            user.insert(&self.database_connection).await;
 
         match user {
             Err(error) => {
                 println!("ERROR: {error:?}");
-                return responses::user::CreateUserResponse::ERROR(Json(json!({"error" : format!("{error:?}"), "code":500})))
-            },
-            
+                return responses::user::CreateUserResponse::ERROR(Json(
+                    json!({"error" : format!("{error:?}"), "code":500, "username": &generated_username}),
+                ));
+            }
+
             Ok(user) => {
                 let user: users::Model = user;
                 println!("{user:?}");
@@ -121,11 +126,9 @@ impl Api {
                         "message": format!("{} accont has been created", name.clone().unwrap_or("".to_string())).as_str()
                     })),
                     client.to_cookie_string(&self.args, server_secret.0.clone(), None),
-                )
+                );
             }
         }
-
-
     }
 
     /// User Edit

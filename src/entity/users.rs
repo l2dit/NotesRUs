@@ -8,7 +8,7 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
     pub username: String,
-    pub name: String,
+    pub name: Option<String>,
     pub most_recent_client: Option<i32>,
     pub role: Option<i32>,
     pub creation_time: DateTimeWithTimeZone,
