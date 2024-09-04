@@ -18,9 +18,11 @@ use poem_openapi::{
     payload::Json,
     OpenApi, Tags,
 };
-use sea_orm::ActiveModelTrait;
+use sea_orm::{ActiveModelTrait, ColumnTrait, QueryFilter};
+use sea_orm::EntityTrait;
 use sea_orm::DatabaseConnection;
-use serde_json::{json, Value};
+use sea_orm::Set as DataBaseSet;
+use serde_json::json;
 use uuid::Uuid;
 
 use super::cli::Args;
@@ -123,7 +125,7 @@ impl Api {
                 println!("{user:?}");
                 return responses::user::CreateUserResponse::Ok(
                     Json(json!({
-                        "message": format!("{} accont has been created", name.clone().unwrap_or("".to_string())).as_str()
+                        "message": format!("{} account has been created", name.clone().unwrap_or("".to_string())).as_str()
                     })),
                     client.to_cookie_string(&self.args, server_secret.0.clone(), None),
                 );
@@ -136,15 +138,39 @@ impl Api {
     /// # Edit Name
     /// This route is to remove or change the name of the user note this is not the same as
     /// username.
-    ///
-    /// note this is just for testing at the moment enter a nonsence name as this is not used
     #[oai(path = "/user/edit", method = "get", tag = ApiTags::User)]
     pub async fn wow(
         &self,
         auth: auth::ApiSecurityScheme,
         #[oai(name = "NewName")] username: Header<String>,
-    ) -> Json<Value> {
-        Json(json!({"Info": {"ActiveUserToken": auth.0, "Name": username.clone()}}))
+    ) -> responses::user::EditUserResponse {
+
+        let user: Result<Option<users::Model>, sea_orm::DbErr> = users::Entity::find().filter(users::Column::Username.contains(auth.0.user_name)).one(&self.database_connection).await;
+
+        match user {
+            Ok(user) => {
+                match user {
+                    Some(user) => {
+                        let mut new_user: users::ActiveModel = user.clone().into();
+                        new_user.name = DataBaseSet(Some(username.0.clone()));
+                        new_user.update(&self.database_connection).await.unwrap();
+                        responses::user::EditUserResponse::Ok(Json(json!({"message": format!("User {}'s name was updated to {}", user.username, username.0)})))
+                    },
+                    None => responses::user::EditUserResponse::ERROR(Json(
+                        json!({"error" : format!("User was not found in databse."), "code":404}),
+                    ))
+
+
+            }
+        },
+            Err(error) => {
+                responses::user::EditUserResponse::ERROR(Json(
+                    json!({"error" : format!("{error:?}"), "code":500}),
+                ))
+            }
+        }
+
+        //Json(json!({"Info": {"ActiveUserToken": auth.0, "Name": username.clone()}}))
     }
 
     /// Create A New Post/Note
