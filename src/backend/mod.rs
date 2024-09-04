@@ -18,10 +18,10 @@ use poem_openapi::{
     payload::Json,
     OpenApi, Tags,
 };
-use sea_orm::{ActiveModelTrait, ColumnTrait, QueryFilter};
 use sea_orm::EntityTrait;
-use sea_orm::DatabaseConnection;
 use sea_orm::Set as DataBaseSet;
+use sea_orm::{ActiveModelTrait, ColumnTrait, QueryFilter};
+use sea_orm::{DatabaseConnection, IntoActiveModel};
 use serde_json::json;
 use uuid::Uuid;
 
@@ -77,52 +77,63 @@ impl Api {
         #[oai(name = "Name")] name: Header<Option<String>>,
         #[oai(name = "ClientName")] client_name: Header<Option<String>>,
     ) -> responses::user::CreateUserResponse {
-        let generated_username: String = Generator::with_naming(Name::Numbered)
-            .next()
-            .unwrap()
-            .to_string();
-
+        // initlises the client object minuns the username
         let mut client = UserToken {
             client_secret: Uuid::new_v4()
                 .sign_with_key(&server_secret.clone())
                 .expect("Could Not Sign Client Secret"),
-            user_name: generated_username.clone(),
+            client_identifier: match client_name.0 {
+                Some(client_name) => client_name,
+                None => Generator::with_naming(Name::Plain)
+                    .next()
+                    .unwrap()
+                    .to_string(),
+            },
             ..Default::default()
         };
 
-        match client_name.clone() {
-            Some(client_name) => client.client_identifier = client_name,
-            None => (),
-        };
-
-        let mut user: users::ActiveModel = users::ActiveModel {
-            username: sea_orm::ActiveValue::set(generated_username.clone()),
-            name: sea_orm::ActiveValue::not_set(),
+        // user with out the username that includes there id `{username}` not `{username}-{id}`
+        let user: users::ActiveModel = users::ActiveModel {
+            username: sea_orm::ActiveValue::set(
+                Generator::with_naming(Name::Plain).next().unwrap(),
+            ),
+            name: match name.clone() {
+                Some(name) => sea_orm::ActiveValue::set(name.into()),
+                None => sea_orm::ActiveValue::not_set(),
+            },
             most_recent_client: sea_orm::ActiveValue::not_set(),
             role: sea_orm::ActiveValue::not_set(),
             creation_time: sea_orm::ActiveValue::set(Local::now().into()),
             ..Default::default()
         };
 
-        match name.0 {
-            Some(ref name_value) => user.set(users::Column::Name, name_value.into()),
-            None => (),
-        }
-
+        // applies the user active model
         let user: Result<users::Model, sea_orm::DbErr> =
             user.insert(&self.database_connection).await;
 
+        // updates the username to be unique by adding the id of the user to the end `{username}-{id}`
+        let user: Result<users::Model, sea_orm::DbErr> = match user {
+            Ok(user_model) => {
+                let mut user: users::ActiveModel = user_model.clone().into_active_model();
+                user.set(
+                    users::Column::Username,
+                    format!("{}-{}", user_model.username, user_model.id).into(),
+                );
+                user.update(&self.database_connection).await
+            }
+            Err(user_err) => Err(user_err),
+        };
+
+        // catches any error prone db code and returns to the user
         match user {
             Err(error) => {
-                println!("ERROR: {error:?}");
                 return responses::user::CreateUserResponse::ERROR(Json(
-                    json!({"error" : format!("{error:?}"), "code":500, "username": &generated_username}),
+                    json!({"error" : format!("{error:?}"), "code":500}),
                 ));
             }
 
-            Ok(user) => {
-                let user: users::Model = user;
-                println!("{user:?}");
+            Ok(user_model) => {
+                client.user_name = user_model.username;
                 return responses::user::CreateUserResponse::Ok(
                     Json(json!({
                         "message": format!("{} account has been created", name.clone().unwrap_or("".to_string())).as_str()
@@ -144,30 +155,32 @@ impl Api {
         auth: auth::ApiSecurityScheme,
         #[oai(name = "NewName")] username: Header<String>,
     ) -> responses::user::EditUserResponse {
-
-        let user: Result<Option<users::Model>, sea_orm::DbErr> = users::Entity::find().filter(users::Column::Username.contains(auth.0.user_name)).one(&self.database_connection).await;
+        let user: Result<Option<users::Model>, sea_orm::DbErr> = users::Entity::find()
+            .filter(users::Column::Username.contains(auth.0.user_name))
+            .one(&self.database_connection)
+            .await;
 
         match user {
-            Ok(user) => {
-                match user {
-                    Some(user) => {
-                        let mut new_user: users::ActiveModel = user.clone().into();
-                        new_user.name = DataBaseSet(Some(username.0.clone()));
-                        new_user.update(&self.database_connection).await.unwrap();
-                        responses::user::EditUserResponse::Ok(Json(json!({"message": format!("User {}'s name was updated to {}", user.username, username.0)})))
-                    },
-                    None => responses::user::EditUserResponse::ERROR(Json(
-                        json!({"error" : format!("User was not found in databse."), "code":404}),
-                    ))
-
-
-            }
-        },
-            Err(error) => {
-                responses::user::EditUserResponse::ERROR(Json(
-                    json!({"error" : format!("{error:?}"), "code":500}),
-                ))
-            }
+            Ok(user) => match user {
+                Some(user) => {
+                    let mut new_user: users::ActiveModel = user.clone().into();
+                    new_user.name = DataBaseSet(Some(username.0.clone()));
+                    new_user.update(&self.database_connection).await.unwrap();
+                    responses::user::EditUserResponse::Ok(Json(json!({
+                        "message":
+                            format!(
+                                "User {}'s name was updated to {}",
+                                user.username, username.0
+                            )
+                    })))
+                }
+                None => responses::user::EditUserResponse::ERROR(Json(
+                    json!({"error" : format!("User was not found in databse."), "code":404}),
+                )),
+            },
+            Err(error) => responses::user::EditUserResponse::ERROR(Json(
+                json!({"error" : format!("{error:?}"), "code":500}),
+            )),
         }
 
         //Json(json!({"Info": {"ActiveUserToken": auth.0, "Name": username.clone()}}))
