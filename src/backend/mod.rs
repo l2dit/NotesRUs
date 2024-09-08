@@ -180,6 +180,14 @@ impl Api {
             .await
         );
 
+        let _ = check::CheckAuth {
+            database_connection: self.database_connection.clone(),
+            user_token: auth.0.clone(),
+            user_id: None,
+        }
+        .set_recent_client()
+        .await;
+
         let user: Result<Option<users::Model>, sea_orm::DbErr> = check::CheckAuth {
             database_connection: self.database_connection.clone(),
             user_token: auth.0,
