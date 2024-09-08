@@ -1,6 +1,6 @@
 use hmac::{Hmac, Mac};
 use notes_r_us::{
-    backend::{auth::ServerSecret, Api},
+    backend::{auth::security_scheme::ServerSecret, Api},
     cli,
 };
 use poem::{

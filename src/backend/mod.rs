@@ -1,13 +1,13 @@
 use crate::{
     backend::{
-        auth::{ServerSecret, UserToken},
+        auth::security_scheme::{ServerSecret, UserToken},
         requests::post::{PostCreation, PostEdition, PostSelection},
         responses::post::{
             PostCreationResponse, PostDeletionResponse, PostEditionResponse, PostGetResponse,
             PostResponseSuccess,
         },
     },
-    entity::users,
+    entity::{clients, users},
 };
 use chrono::Local;
 use jwt::SignWithKey;
@@ -24,6 +24,8 @@ use sea_orm::{ActiveModelTrait, ColumnTrait, QueryFilter};
 use sea_orm::{DatabaseConnection, IntoActiveModel};
 use serde_json::json;
 use uuid::Uuid;
+
+use self::auth::{check, security_scheme::ApiSecurityScheme};
 
 use super::cli::Args;
 
@@ -114,26 +116,38 @@ impl Api {
         // updates the username to be unique by adding the id of the user to the end `{username}-{id}`
         let user: Result<users::Model, sea_orm::DbErr> = match user {
             Ok(user_model) => {
+                client.user_name = format!("{}-{}", user_model.username, user_model.id);
                 let mut user: users::ActiveModel = user_model.clone().into_active_model();
-                user.set(
-                    users::Column::Username,
-                    format!("{}-{}", user_model.username, user_model.id).into(),
-                );
+                user.set(users::Column::Username, client.user_name.clone().into());
                 user.update(&self.database_connection).await
             }
             Err(user_err) => Err(user_err),
         };
 
+        let client_table: Result<clients::Model, sea_orm::DbErr> = match user {
+            Ok(user_model) => {
+                clients::ActiveModel {
+                    user_id: sea_orm::ActiveValue::Set(user_model.id),
+                    client_identifier: sea_orm::ActiveValue::Set(client.client_identifier.clone()),
+                    client_secret: sea_orm::ActiveValue::Set(client.client_secret.clone()),
+                    creation_time: sea_orm::ActiveValue::Set(Local::now().into()),
+                    ..Default::default()
+                }
+                .insert(&self.database_connection)
+                .await
+            }
+            Err(user_err) => Err(user_err),
+        };
+
         // catches any error prone db code and returns to the user
-        match user {
+        match client_table {
             Err(error) => {
                 return responses::user::CreateUserResponse::ERROR(Json(
                     json!({"error" : format!("{error:?}"), "code":500}),
                 ));
             }
 
-            Ok(user_model) => {
-                client.user_name = user_model.username;
+            Ok(_) => {
                 return responses::user::CreateUserResponse::Ok(
                     Json(json!({
                         "message": format!("{} account has been created", name.clone().unwrap_or("".to_string())).as_str()
@@ -152,19 +166,33 @@ impl Api {
     #[oai(path = "/user/edit", method = "get", tag = ApiTags::User)]
     pub async fn wow(
         &self,
-        auth: auth::ApiSecurityScheme,
+        auth: ApiSecurityScheme,
         #[oai(name = "NewName")] username: Header<String>,
     ) -> responses::user::EditUserResponse {
-        let user: Result<Option<users::Model>, sea_orm::DbErr> = users::Entity::find()
-            .filter(users::Column::Username.contains(auth.0.user_name))
-            .one(&self.database_connection)
-            .await;
+        println!(
+            "{:?}",
+            check::CheckAuth {
+                database_connection: self.database_connection.clone(),
+                user_token: auth.0.clone(),
+                user_id: None
+            }
+            .get_user_id()
+            .await
+        );
+
+        let user: Result<Option<users::Model>, sea_orm::DbErr> = check::CheckAuth {
+            database_connection: self.database_connection.clone(),
+            user_token: auth.0,
+            user_id: None,
+        }
+        .get_user_model()
+        .await;
 
         match user {
             Ok(user) => match user {
                 Some(user) => {
                     let mut new_user: users::ActiveModel = user.clone().into();
-                    new_user.name = DataBaseSet(Some(username.0.clone()));
+                    new_user.name = DataBaseSet(username.0.clone());
                     new_user.update(&self.database_connection).await.unwrap();
                     responses::user::EditUserResponse::Ok(Json(json!({
                         "message":
@@ -192,7 +220,7 @@ impl Api {
     #[oai(path = "/post/create", method = "put", tag = ApiTags::Post)]
     pub async fn post_create(
         &self,
-        auth: auth::ApiSecurityScheme,
+        auth: ApiSecurityScheme,
         req: PostCreation,
     ) -> PostCreationResponse {
         let body = match req {
@@ -211,7 +239,7 @@ impl Api {
     #[oai(path = "/post/edit", method = "post", tag = ApiTags::Post)]
     pub async fn post_edit(
         &self,
-        auth: auth::ApiSecurityScheme,
+        auth: ApiSecurityScheme,
         #[oai(name = "PostId")] post_id: Header<String>,
         req: PostEdition,
     ) -> PostEditionResponse {
@@ -224,7 +252,7 @@ impl Api {
     #[oai(path = "/post/delete", method = "delete", tag = ApiTags::Post)]
     pub async fn post_delete(
         &self,
-        auth: auth::ApiSecurityScheme,
+        auth: ApiSecurityScheme,
         req: PostSelection,
     ) -> PostDeletionResponse {
         PostDeletionResponse::Forbiden
