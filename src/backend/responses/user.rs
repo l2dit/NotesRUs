@@ -10,20 +10,15 @@ pub enum CreateUserResponse {
     ),
     /// User Failed To Be Created
     #[oai(status = 500)]
-    ERROR(Json<serde_json::Value>)
+    ERROR(Json<serde_json::Value>),
 }
 
 #[derive(ApiResponse)]
 pub enum EditUserResponse {
     /// User Is Sucessfully Created
     #[oai(status = "200")]
-    Ok(
-        Json<serde_json::Value>,
-    ),
+    Ok(Json<serde_json::Value>),
     /// User Failed To Be Created
     #[oai(status = 404)]
-    ERROR(Json<serde_json::Value>)
+    Err(Json<serde_json::Value>),
 }
-
-
-

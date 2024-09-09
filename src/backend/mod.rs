@@ -18,9 +18,8 @@ use poem_openapi::{
     payload::Json,
     OpenApi, Tags,
 };
-use sea_orm::EntityTrait;
+use sea_orm::ActiveModelTrait;
 use sea_orm::Set as DataBaseSet;
-use sea_orm::{ActiveModelTrait, ColumnTrait, QueryFilter};
 use sea_orm::{DatabaseConnection, IntoActiveModel};
 use serde_json::json;
 use uuid::Uuid;
@@ -171,55 +170,43 @@ impl Api {
     ) -> responses::user::EditUserResponse {
         println!(
             "{:?}",
-            check::CheckAuth {
-                database_connection: self.database_connection.clone(),
-                user_token: auth.0.clone(),
-                user_id: None
-            }
-            .get_user_id()
-            .await
+            check::CheckAuth::new(self.database_connection.clone(), auth.0.clone())
+                .await
+                .unwrap()
+                .log_client()
+                .await
+                .unwrap()
         );
 
-        let _ = check::CheckAuth {
-            database_connection: self.database_connection.clone(),
-            user_token: auth.0.clone(),
-            user_id: None,
-        }
-        .set_recent_client()
-        .await;
+        match check::CheckAuth::new(self.database_connection.clone(), auth.0.clone()).await {
+            Ok(check_auth) => match check_auth.find_user_model().await {
+                Ok(check_auth) => match check_auth.log_client().await {
+                    Ok(check_auth) => {
+                        let mut user = check_auth.user_model.clone().unwrap().into_active_model();
+                        user.name = DataBaseSet(username.0.clone());
+                        user.update(&self.database_connection).await.unwrap();
 
-        let user: Result<Option<users::Model>, sea_orm::DbErr> = check::CheckAuth {
-            database_connection: self.database_connection.clone(),
-            user_token: auth.0,
-            user_id: None,
-        }
-        .get_user_model()
-        .await;
-
-        match user {
-            Ok(user) => match user {
-                Some(user) => {
-                    let mut new_user: users::ActiveModel = user.clone().into();
-                    new_user.name = DataBaseSet(username.0.clone());
-                    new_user.update(&self.database_connection).await.unwrap();
-                    responses::user::EditUserResponse::Ok(Json(json!({
-                        "message":
-                            format!(
-                                "User {}'s name was updated to {}",
-                                user.username, username.0
-                            )
-                    })))
-                }
-                None => responses::user::EditUserResponse::ERROR(Json(
-                    json!({"error" : format!("User was not found in databse."), "code":404}),
+                        responses::user::EditUserResponse::Ok(Json(json!({
+                            "message":
+                                format!(
+                                    "User {}'s name was updated to {}",
+                                    check_auth.user_model.unwrap().username,
+                                    username.0
+                                )
+                        })))
+                    }
+                    Err(error) => responses::user::EditUserResponse::Err(Json(
+                        json!({"message": "User recent client failed to be loged", "error": {"code": 500u16, "message": format!("{error:?}")}}),
+                    )),
+                },
+                Err(error) => responses::user::EditUserResponse::Err(Json(
+                    json!({"message": "Could not find user in database", "error": {"code": 500u16, "message": format!("{error:?}")}}),
                 )),
             },
-            Err(error) => responses::user::EditUserResponse::ERROR(Json(
-                json!({"error" : format!("{error:?}"), "code":500}),
+            Err(error) => responses::user::EditUserResponse::Err(Json(
+                json!({"message": "User failed to authenticate", "error": {"code": 500u16, "message": format!("{error:?}")}}),
             )),
         }
-
-        //Json(json!({"Info": {"ActiveUserToken": auth.0, "Name": username.clone()}}))
     }
 
     /// Create A New Post/Note
