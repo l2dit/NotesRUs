@@ -1,3 +1,7 @@
+//! # Security Scheme
+//!
+//! Poem security scheme.
+
 use chrono::prelude::*;
 use hmac::Hmac;
 use jwt::{SignWithKey, VerifyWithKey};
@@ -9,6 +13,8 @@ use uuid::Uuid;
 
 use crate::cli::Args;
 
+/// # Api Security Scheme
+///
 /// ### ***Important***
 /// This Value Can Be Left With A Blank Space As It's Overwriten By Browser Cookies.
 ///
@@ -28,13 +34,19 @@ async fn api_security_token_checker(request: &Request, api_key: ApiKey) -> Optio
     VerifyWithKey::verify_with_key(api_key.key.as_str(), server_secret).unwrap()
 }
 
+/// Server Secret Hasing Type
 pub type ServerSecret = Hmac<Sha256>;
 
+/// UserToken Info Stored in The Browser Cookie/Token
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct UserToken {
+    /// Client Identifier Refrances in The Database
     pub client_identifier: String,
+    /// Client Secret For Authenticating The Client
     pub client_secret: String,
+    /// The User Name Matches Database
     pub user_name: String,
+    /// The Date & Time of The Encoding of the Cookie
     pub creation_date: DateTime<Local>,
 }
 
@@ -50,6 +62,7 @@ impl Default for UserToken {
     }
 }
 
+/// Adding Of Helper Functions
 impl UserToken {
     /// generates the response header that sets the cookie in browser
     pub fn to_cookie_string(
